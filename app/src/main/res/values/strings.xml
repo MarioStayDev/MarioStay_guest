@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">MarioStay</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_search">Search</string>
+    <string name="title_inbox">Inbox</string>
+    <string name="title_shortlist">Shortlist</string>
+    <string name="title_booking">Booking</string>
+    <string name="title_profile">Profile</string>
+    <string name="prompt_email">Username or Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="button_login">Login</string>
+    <string name="button_signup">Register</string>
+    <string name="button_guest">Continue as guest</string>
+    <string name="prompt_name">User name</string>
+    <string name="radio_male">Male</string>
+    <string name="radio_female">Female</string>
+    <string name="radio_student">Student</string>
+    <string name="radio_professional">Professional</string>
+    <string name="prompt_phone">Phone no.</string>
+    <string name="button_otp">Send OTP</string>
+    <string name="otp_info">An OTP will be sent to this phone number</string>
+    <string name="prompt_otp">OTP</string>
+    <string name="photo_content_description">Photo</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.mario;
+package com.mariostay.guest.mariostay;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +11,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.mariostay.guest.mariostay.R;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -34,7 +37,6 @@ public class LoginActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		// TODO: Implement this method
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		
@@ -77,7 +79,6 @@ public class LoginActivity extends AppCompatActivity
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		// TODO: Implement this method
 		super.onActivityResult(requestCode, resultCode, data);
 		switch(requestCode) {
 			case REQUEST_SIGNUP:
@@ -99,7 +100,7 @@ public class LoginActivity extends AppCompatActivity
 		private String data,error, na, em = "dummy@email.com";
 		private URL url;
 		
-		public ValidateLogin(String n,String p) {
+		ValidateLogin(String n,String p) {
 			na = n;
 			try {
 				data = URLEncoder.encode("user", "UTF-8") + "=" + URLEncoder.encode(na, "UTF-8");

@@ -1,4 +1,4 @@
-package com.example.mario;
+package com.mariostay.guest.mariostay;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -65,7 +64,6 @@ public class SignupActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		// TODO: Implement this method
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
 

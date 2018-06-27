@@ -7,12 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.mariostay.guest.mariostay.R;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,11 +24,19 @@ import java.net.URLEncoder;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
 public class LoginActivity extends AppCompatActivity
 {
-	private EditText mEmail,mPassword;
-	private Button buttonLogin,buttonSignup;
+	@BindView(R.id.login_email) EditText mEmail;
+	@BindView(R.id.login_password) EditText mPassword;
+	@BindView(R.id.login_button_login) Button buttonLogin;
+	@BindView(R.id.login_button_signup) Button buttonSignup;
 	private final int REQUEST_SIGNUP=101;
+	private Unbinder unbinder;
 	private Toast mToast;
 
 	@Override
@@ -39,12 +44,13 @@ public class LoginActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		
-		mToast=Toast.makeText(this,"",Toast.LENGTH_SHORT);
-		mEmail = findViewById(R.id.email);
+
+		unbinder = ButterKnife.bind(this);
+		//mToast=Toast.makeText(this,"",Toast.LENGTH_SHORT);
+		/*mEmail = findViewById(R.id.email);
 		mPassword = findViewById(R.id.password);
 		buttonLogin = findViewById(R.id.button_login);
-		buttonSignup = findViewById(R.id.button_signup);
+		buttonSignup = findViewById(R.id.button_signup);*/
 		
 		buttonLogin.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -67,6 +73,12 @@ public class LoginActivity extends AppCompatActivity
 			});
 		
 		setResult(RESULT_CANCELED);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unbinder.unbind();
 	}
 
 	public void guest(View v) {
@@ -129,7 +141,7 @@ public class LoginActivity extends AppCompatActivity
 			buttonLogin.setEnabled(true);
 			buttonSignup.setEnabled(true);
 			if(error == null) {
-				JSONObject jobj = null;
+				JSONObject jobj;
 				try {
 					jobj = new JSONObject(data);
 					if(jobj.getInt("success") == 1) {
@@ -167,10 +179,10 @@ public class LoginActivity extends AppCompatActivity
 				
 				BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				StringBuilder sb = new StringBuilder();
-				String line = null;
+				String line;
 
 				while((line = reader.readLine()) != null)
-					sb.append(line + "\n");
+					sb.append(line).append("\n");
 				reader.close();
 
 				data = sb.toString();

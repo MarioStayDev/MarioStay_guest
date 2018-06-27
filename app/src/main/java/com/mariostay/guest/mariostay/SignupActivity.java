@@ -133,18 +133,11 @@ public class SignupActivity extends AppCompatActivity
 			p=mPass.getText().toString(),
 			ph=mPhone.getText().toString()
 			,e=mEmail.getText().toString();
-		if("".equals(u))
-			d("Username required");
-		else if("".equals(e))
-			d("Email required");
-		else if("".equals(p))
-			d("Password required");
-		else if(!android.util.Patterns.PHONE.matcher(ph).matches())
-			d("Invalid phone number");
-		else {
-			//
-			d("not yet implemented");
-		}
+		if("".equals(u)) d("Username required");
+		else if("".equals(e)) d("Email required");
+		else if("".equals(p)) d("Password required");
+		else if(!android.util.Patterns.PHONE.matcher(ph).matches()) d("Invalid phone number");
+		else { d("not yet implemented"); }
 	}
 	
 	private void d(String s) {
@@ -165,25 +158,13 @@ public class SignupActivity extends AppCompatActivity
 		}
 
 		@Override
-		protected void onPreExecute()
-		{
-			// TODO: Implement this method
-			super.onPreExecute();
-		}
+		protected void onPreExecute() { super.onPreExecute(); }
 
 		@Override
-		protected void onPostExecute(Void result)
-		{
-			// TODO: Implement this method
-			super.onPostExecute(result);
-		}
+		protected void onPostExecute(Void result) { super.onPostExecute(result); }
 
 		@Override
-		protected Void doInBackground(Void[] p1)
-		{
-			// TODO: Implement this method
-			return null;
-		}
+		protected Void doInBackground(Void[] p1) { return null; }
 
 	}
 

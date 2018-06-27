@@ -1,5 +1,8 @@
 <resources>
+    <!-- Name of application -->
     <string name="app_name">MarioStay</string>
+
+    <!-- Headings and titles -->
     <string name="title_activity_test">TestActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -9,6 +12,8 @@
     <string name="title_shortlist">Shortlist</string>
     <string name="title_booking">Booking</string>
     <string name="title_profile">Profile</string>
+
+    <!-- Input prompts -->
     <string name="prompt_email">Username or Email</string>
     <string name="prompt_password">Password</string>
     <string name="button_login">Login</string>
@@ -21,10 +26,15 @@
     <string name="radio_professional">Professional</string>
     <string name="prompt_phone">Phone no.</string>
     <string name="button_otp">Send OTP</string>
-    <string name="otp_info">An OTP will be sent to this phone number</string>
     <string name="prompt_otp">OTP</string>
-    <string name="photo_content_description">Photo</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <!-- card string format -->
+    <string name="property_reviews">(%1$d)</string>
+    <string name="property_rent">Rs. %1$s/month</string>
+
+    <string name="photo_content_description">Photo</string>
+    <string name="otp_info">An OTP will be sent to this phone number</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

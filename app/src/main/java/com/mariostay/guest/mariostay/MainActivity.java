@@ -5,14 +5,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements BrowseFragment.OnFragmentInteractionListener {
@@ -110,16 +109,16 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 			startActivityForResult(loginIntent,REQUEST_LOGIN);
 		}
 
-		mToast = Toast.makeText(this, "Init", Toast.LENGTH_LONG);
+		//mToast = Toast.makeText(this, "Init", Toast.LENGTH_LONG);
     }
 
     private void setupViewPager(ViewPager v) {
 		ViewPagerAdapter adapter = new ViewPagerAdapter(mFragmentManager);
 		adapter.addFragment(new BrowseFragment());
-		adapter.addFragment(new BrowseFragment());
-		adapter.addFragment(new BrowseFragment());
-		adapter.addFragment(new BrowseFragment());
-		adapter.addFragment(new BrowseFragment());
+		adapter.addFragment(new Fragment());
+		adapter.addFragment(new Fragment());
+		adapter.addFragment(new Fragment());
+		adapter.addFragment(new Fragment());
 		v.setAdapter(adapter);
 	}
 

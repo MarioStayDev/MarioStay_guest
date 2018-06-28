@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/menu_property_share"
+        android:title="@string/menu_property_share"
+        android:icon="@drawable/ic_share_white_24dp"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_property_fav"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
+        android:title="@string/menu_property_fav_no"
+        app:showAsAction="ifRoom" />
+
+</menu>

@@ -17,7 +17,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements BrowseFragment.OnFragmentInteractionListener {
 
 	static final String KEY_SHARED_PREFERENCE = "com.mariostay.guest.mariostay.KEY_SHARED_PREF", KEY_USER_NAME = "com.mariostay.guest.mariostay.KEY_USER_NAME", KEY_EMAIL = "com.mariostay.guest.mariostay.KEY_EMAIL";
-	private final String KEY_LOGGED_IN = "com.mariostay.guest.mariostay.KEY_LOGGED_IN";
+	private final String KEY_LOGGED_IN = "com.mariostay.guest.mariostay.KEY_LOGGED_IN", KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
 	private final int REQUEST_LOGIN = 101;
 	private boolean userIsLoggedIn;
 	private FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -177,7 +177,9 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 
 	}
 
-	public void onFragmentInteraction(Uri uri) {
-
+	public void onPropertyClicked(Bundle bundle) {
+		Intent intent = new Intent(this, PropertyDetailsActivity.class);
+		intent.putExtra(KEY_PROPERTY, bundle.getParcelable(KEY_PROPERTY));
+		startActivity(intent);
 	}
 }

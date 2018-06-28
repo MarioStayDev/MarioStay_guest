@@ -2,13 +2,14 @@ package com.mariostay.guest.mariostay;
 
 import android.content.Context;
 import java.text.NumberFormat;
+import java.util.Currency;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +35,6 @@ import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 public class BrowseFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    //private PropertyAdapter adapter;
     @BindView(R.id.browse_recycler) RecyclerView rv;
     @BindView(R.id.browse_progress) ProgressBar progressBar;
     private Unbinder unbinder;
@@ -43,14 +43,9 @@ public class BrowseFragment extends Fragment {
     private FirestoreRecyclerAdapter adapter;
 
     private Toast mToast;
+    private NumberFormat format;
 
-    /*private static final int PAGE_START = 0;
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-    private int TOTAL_PAGES = 3;
-    private int currentPage = PAGE_START;*/
-
-
+    private final String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
 
     public BrowseFragment() {}
 
@@ -58,6 +53,8 @@ public class BrowseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mToast = new Toast(getActivity());
+        format = NumberFormat.getCurrencyInstance();
+        format.setCurrency(Currency.getInstance("INR"));
     }
 
     @Override
@@ -66,59 +63,13 @@ public class BrowseFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_browse, container, false);
         unbinder = ButterKnife.bind(this, v);
 
-        //adapter = new PropertyAdapter(this);
-
-        //linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        //rv.setLayoutManager(linearLayoutManager);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
         rv.setLayoutManager(layoutManager);
 
         rv.setItemAnimator(new DefaultItemAnimator());
         db = FirebaseFirestore.getInstance();
-
         setupAdapter();
 
-        /*rv.setAdapter(adapter);
-
-        rv.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
-            @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-
-                // mocking network delay for API call
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadNextPage();
-                    }
-                }, 1000);
-            }
-
-            @Override
-            public int getTotalPageCount() {
-                return TOTAL_PAGES;
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });*/
-
-
-        // mocking network delay for API call
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadFirstPage();
-            }
-        }, 1000);*/
         return v;
     }
 
@@ -129,10 +80,9 @@ public class BrowseFragment extends Fragment {
                 .setQuery(q, Property.class).build();
 
         adapter = new FirestoreRecyclerAdapter<Property, PropertyHolder>(res) {
-            NumberFormat format = NumberFormat.getCurrencyInstance();
 
             @Override
-            protected void onBindViewHolder(@NonNull PropertyHolder holder, int position, @NonNull Property model) {
+            protected void onBindViewHolder(@NonNull PropertyHolder holder, int position, @NonNull final Property model) {
                 progressBar.setVisibility(View.GONE);
                 final int actualPosition = holder.getAdapterPosition();
                 holder.propName.setText(model.getName());
@@ -143,8 +93,10 @@ public class BrowseFragment extends Fragment {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        d("Clicked pos " + actualPosition);
-                        //mListener.onFragmentInteraction(null);
+                        //d("Clicked pos " + actualPosition);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable(KEY_PROPERTY, model);
+                        mListener.onPropertyClicked(bundle);
                     }
                 });
             }
@@ -220,7 +172,7 @@ public class BrowseFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onPropertyClicked(Bundle bundle);
     }
 
     private void d(String st) {

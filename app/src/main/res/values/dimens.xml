@@ -2,4 +2,5 @@
 <resources>
     <dimen name="login_padding">8dp</dimen>
     <dimen name="ui_elems_spacing">32dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
 </resources>

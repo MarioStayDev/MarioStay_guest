@@ -33,7 +33,7 @@ class Property implements Parcelable {
 		this.Landmark = parcel.readString();
 		this.ShortDescription = parcel.readString();
 		this.Rules = parcel.readString();
-
+		Amenities = new HashMap<>();
 		parcel.readMap(this.Amenities, null);
 	}
 
@@ -70,7 +70,7 @@ class Property implements Parcelable {
 	String getShortDescription() { return ShortDescription; }
 	String getRules() { return Rules; }
 	GeoPoint getLocation() {return Location; }
-	Map getAmenities() { return Amenities; }
+	Map<String, Boolean> getAmenities() { return Amenities; }
 
 	void setPID(int pID) { PID = pID; }
 	void setHID(int hID) { HID = hID; }

@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 			startActivityForResult(loginIntent,REQUEST_LOGIN);
 		}
 
+		mToast = new Toast(this);
 		//mToast = Toast.makeText(this, "Init", Toast.LENGTH_LONG);
     }
 

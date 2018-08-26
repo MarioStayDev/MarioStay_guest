@@ -25,7 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_launcher_background" />
+                app:srcCompat="@drawable/wifi"
+                android:contentDescription="@string/image_description_property"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/property_details_toolbar"
@@ -82,91 +83,91 @@
                 android:paddingRight="@dimen/ui_elems_spacing" >
 
                 <ImageView
-                    android:id="@+id/chip1"
+                    android:id="@+id/chip_lift"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/lift" />
 
                 <ImageView
-                    android:id="@+id/chip2"
+                    android:id="@+id/chip_parking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/parking" />
 
                 <ImageView
-                    android:id="@+id/chip3"
+                    android:id="@+id/chip_cctv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/cctv" />
 
                 <ImageView
-                    android:id="@+id/chip4"
+                    android:id="@+id/chip_power"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/power" />
 
                 <ImageView
-                    android:id="@+id/chip5"
+                    android:id="@+id/chip_playground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/playground" />
 
                 <ImageView
-                    android:id="@+id/chip6"
+                    android:id="@+id/chip_pool"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/pool" />
 
                 <ImageView
-                    android:id="@+id/chip7"
+                    android:id="@+id/chip_garden"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/garden" />
 
                 <ImageView
-                    android:id="@+id/chip8"
+                    android:id="@+id/chip_gym"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/gym" />
 
                 <ImageView
-                    android:id="@+id/chip9"
+                    android:id="@+id/chip_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/television" />
 
                 <ImageView
-                    android:id="@+id/chip10"
+                    android:id="@+id/chip_refridgerator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/refridgerator" />
 
                 <ImageView
-                    android:id="@+id/chip11"
+                    android:id="@+id/chip_washing_machine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/washingmachine" />
 
                 <ImageView
-                    android:id="@+id/chip12"
+                    android:id="@+id/chip_water_purifier"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/water_purifier" />
 
                 <ImageView
-                    android:id="@+id/chip13"
+                    android:id="@+id/chip_wifi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/wifi" />
 
                 <ImageView
-                    android:id="@+id/chip14"
+                    android:id="@+id/chip_sofa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/sofa" />
 
                 <ImageView
-                    android:id="@+id/chip15"
+                    android:id="@+id/chip_table"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/table" />
@@ -189,7 +190,7 @@
                 android:layout_height="@dimen/ui_elems_spacing" />
 
             <TextView
-                android:text="In and Out Time : Flexible"
+                android:id="@+id/property_details_in_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
@@ -197,15 +198,23 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <TextView
-                android:text="Reviews : 21"
+                android:id="@+id/property_details_out_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
                 android:paddingRight="@dimen/ui_elems_spacing"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
+            <!--<TextView
+                android:id="@+id/property_details_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/ui_elems_spacing"
+                android:paddingRight="@dimen/ui_elems_spacing"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />-->
+
             <TextView
-                android:text="Security Deposit : 1 Month"
+                android:id="@+id/property_details_security_deposit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
@@ -228,16 +237,16 @@
                 android:paddingRight="@dimen/ui_elems_spacing"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
-            <TextView
+            <!--<TextView
                 android:text="Cancellation : Moderate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
                 android:paddingRight="@dimen/ui_elems_spacing"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />-->
 
             <TextView
-                android:text="House Rules : Read"
+                android:id="@+id/property_details_rules"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
@@ -245,7 +254,7 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <TextView
-                android:text="Contact Host : Chat"
+                android:text="@string/property_details_contact_host"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/ui_elems_spacing"
@@ -253,6 +262,17 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <!-- Rooms -->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/property_details_rooms_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!--<Button
+                android:id="@+id/property_details_button_rooms"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/button_manage_rooms" />-->
 
         </LinearLayout>
 

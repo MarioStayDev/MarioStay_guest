@@ -95,6 +95,7 @@ public class BrowseFragment extends Fragment {
                     public void onClick(View v) {
                         //d("Clicked pos " + actualPosition);
                         Bundle bundle = new Bundle();
+                        //bundle.putString(KEY_PROPERTY, model.getPID());
                         bundle.putParcelable(KEY_PROPERTY, model);
                         mListener.onPropertyClicked(bundle);
                     }

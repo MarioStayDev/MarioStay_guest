@@ -50,4 +50,36 @@
     <string name="menu_property_share">Share</string>
     <string name="menu_property_fav_no">Add to favourites</string>
     <string name="menu_property_fav">Remove from favourites</string>
+    <string name="image_description_property">Property image</string>
+
+    <!-- Chips for common amenities -->
+    <string name="chip_text_lift">Lift Service</string>
+    <string name="chip_text_parking">Parking</string>
+    <string name="chip_text_cctv">CCTV camera</string>
+    <string name="chip_text_power">Power backup</string>
+    <string name="chip_text_playground">Playground</string>
+    <string name="chip_text_pool">Swimming pool</string>
+    <string name="chip_text_garden">Garden</string>
+    <string name="chip_text_gym">Gym</string>
+    <string name="chip_text_tv">Television</string>
+    <string name="chip_text_refridgerator">Refrigerator</string>
+    <string name="chip_text_washing_machine">Washing machine</string>
+    <string name="chip_text_water_purifier">Water purifier</string>
+    <string name="chip_text_wifi">Wifi</string>
+    <string name="chip_text_sofa">Sofa</string>
+    <string name="chip_text_table">Table</string>
+
+    <string name="chip_text_gyser">Gyser</string>
+    <string name="chip_text_attached_washroom">Attached Washroom</string>
+    <string name="chip_text_wardrobe">Wardrobe</string>
+    <string name="chip_text_balcony">Balcony</string>
+    <string name="chip_text_ac">AC</string>
+
+    <string name="in_time_flexible">In time : %1$s</string>
+    <string name="out_time_flexible">Out Time : %1$s</string>
+    <string name="property_details_security_deposit">Security multiplier : %1$d</string>
+    <string name="property_details_notice_period">Notice period : %1$d months</string>
+    <string name="property_details_min_stay_time">Min stay time : %1$d months</string>
+    <string name="property_details_contact_host">Contact host : Chat</string>
+    <string name="property_room_room_no">Room no : %1$d</string>
 </resources>

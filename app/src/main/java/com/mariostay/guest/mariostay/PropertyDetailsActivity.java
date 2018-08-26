@@ -1,17 +1,32 @@
 package com.mariostay.guest.mariostay;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,16 +36,40 @@ import butterknife.ButterKnife;
 
 public class PropertyDetailsActivity extends AppCompatActivity {
 
+    private FirebaseFirestore db;
     private final String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
     private MenuItem favicon;
     private Property property;
-    @BindViews({R.id.chip1, R.id.chip2, R.id.chip3, R.id.chip4, R.id.chip5, R.id.chip6, R.id.chip7, R.id.chip8, R.id.chip9, R.id.chip10, R.id.chip11, R.id.chip12, R.id.chip13, R.id.chip14, R.id.chip15})
-    List<ImageView> chips;
+    //private List<Room> Rooms;
+    //@BindViews({R.id.chip1, R.id.chip2, R.id.chip3, R.id.chip4, R.id.chip5, R.id.chip6, R.id.chip7, R.id.chip8, R.id.chip9, R.id.chip10, R.id.chip11, R.id.chip12, R.id.chip13, R.id.chip14, R.id.chip15})
+    //List<ImageView> chips;
     @BindView(R.id.property_details_toolbar) Toolbar toolbar;
     @BindView(R.id.property_details_desc) TextView desc;
-    @BindView(R.id.property_details_notice_period) TextView notice;
-    @BindView(R.id.property_details_min_stay) TextView stay;
+
+    @BindView(R.id.chip_lift) ImageView chip_lift;
+    @BindView(R.id.chip_parking) ImageView chip_parking;
+    @BindView(R.id.chip_cctv) ImageView chip_cctv;
+    @BindView(R.id.chip_power) ImageView chip_power;
+    @BindView(R.id.chip_playground) ImageView chip_playground;
+    @BindView(R.id.chip_pool) ImageView chip_pool;
+    @BindView(R.id.chip_garden) ImageView chip_garden;
+    @BindView(R.id.chip_gym) ImageView chip_gym;
+    @BindView(R.id.chip_tv) ImageView chip_tv;
+    @BindView(R.id.chip_refridgerator) ImageView chip_fridge;
+    @BindView(R.id.chip_washing_machine) ImageView chip_wash;
+    @BindView(R.id.chip_water_purifier) ImageView chip_water;
+    @BindView(R.id.chip_wifi) ImageView chip_wifi;
+    @BindView(R.id.chip_sofa) ImageView chip_sofa;
+    @BindView(R.id.chip_table) ImageView chip_table;
+
+    @BindView(R.id.property_details_in_time) TextView inTime;
+    @BindView(R.id.property_details_out_time) TextView outTime;
+    @BindView(R.id.property_details_security_deposit) TextView securityDeposit;
+    @BindView(R.id.property_details_notice_period) TextView noticePeriod;
+    @BindView(R.id.property_details_min_stay) TextView minTime;
+    @BindView(R.id.property_details_rooms_container) RecyclerView frame;
     private Toast mToast;
+    private RoomAdapter roomAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +85,8 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
         property = getIntent().getParcelableExtra(KEY_PROPERTY);
         actionBar.setTitle(property.getName());
+
+        db = FirebaseFirestore.getInstance();
         init();
     }
 
@@ -79,22 +120,187 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
     private void init () {
         desc.setText(property.getShortDescription());
-        Resources resources = getResources();
-        int i = property.getNoticePeriod();
-        notice.setText(resources.getQuantityString(R.plurals.property_details_notice_period, i, i));
-        i = property.getMinStayTime();
-        stay.setText(resources.getQuantityString(R.plurals.property_details_stay_time, i, i));
-        i = 0;
-        Map<String, Boolean> iMap = property.getAmenities();
-        for(String s : iMap.keySet()) {
-            if(!iMap.get(s)) chips.get(i).setVisibility(View.GONE);
-            i++;
-        }
+        Map<String, Boolean> imap = property.getAmenities();
+        //System.out.println(imap.toString());
+        /*System.out.println("Property is "+(property == null ? "" : "not ")+"null");
+        System.out.println("Map is "+(imap == null ? "" : "not ")+"null");
+        System.out.println("Chip is "+(chip_cctv == null ? "" : "not ")+"null");*/
+        chip_lift.setVisibility(imap.get(getString(R.string.chip_text_lift)) ? View.VISIBLE : View.GONE);
+        chip_parking.setVisibility(imap.get(getString(R.string.chip_text_parking)) ? View.VISIBLE : View.GONE);
+        chip_cctv.setVisibility(imap.get(getString(R.string.chip_text_cctv)) ? View.VISIBLE : View.GONE);
+        chip_power.setVisibility(imap.get(getString(R.string.chip_text_power)) ? View.VISIBLE : View.GONE);
+        chip_playground.setVisibility(imap.get(getString(R.string.chip_text_playground)) ? View.VISIBLE : View.GONE);
+        chip_pool.setVisibility(imap.get(getString(R.string.chip_text_pool)) ? View.VISIBLE : View.GONE);
+        chip_garden.setVisibility(imap.get(getString(R.string.chip_text_garden)) ? View.VISIBLE : View.GONE);
+        chip_gym.setVisibility(imap.get(getString(R.string.chip_text_gym)) ? View.VISIBLE : View.GONE);
+        chip_tv.setVisibility(imap.get(getString(R.string.chip_text_tv)) ? View.VISIBLE : View.GONE);
+        chip_fridge.setVisibility(imap.get(getString(R.string.chip_text_refridgerator)) ? View.VISIBLE : View.GONE);
+        chip_wash.setVisibility(imap.get(getString(R.string.chip_text_washing_machine)) ? View.VISIBLE : View.GONE);
+        chip_water.setVisibility(imap.get(getString(R.string.chip_text_water_purifier)) ? View.VISIBLE : View.GONE);
+        chip_wifi.setVisibility(imap.get(getString(R.string.chip_text_wifi)) ? View.VISIBLE : View.GONE);
+        chip_sofa.setVisibility(imap.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
+        chip_table.setVisibility(imap.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
+
+        String temp = property.getInTime();
+        inTime.setText(getString(R.string.in_time_flexible, temp == null || temp.length() == 0 || temp.equals("0") ? "Flexible" : temp));
+        temp = property.getOutTime();
+        outTime.setText(getString(R.string.out_time_flexible, temp == null || temp.length() == 0 || temp.equals("0") ? "Flexible" : temp));
+        securityDeposit.setText(getString(R.string.property_details_security_deposit, property.getSecurityMultiplier()));
+        noticePeriod.setText(getString(R.string.property_details_notice_period, property.getNoticePeriod()));
+        minTime.setText(getString(R.string.property_details_min_stay_time, property.getMinStayTime()));
+
+        //Rooms = new ArrayList<>();
+        roomAdapter = new RoomAdapter();
+        frame.setLayoutManager(new LinearLayoutManager(this) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
+        frame.setAdapter(roomAdapter);
+        //roomAdapter.addRoom(null);
+        db.collection("properties").document(property.getPID()).collection("rooms")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()) {
+                            for(QueryDocumentSnapshot doc : task.getResult()) {
+                                //Room i = doc.toObject(Room.class);
+                                roomAdapter.addRoom(doc.toObject(Room.class));
+                            }
+                            roomAdapter.removeLoading(false);
+                            //refreshRoomsList(true);
+                        }
+                        else {
+                            Log.d("TAG", "Error getting documents : ", task.getException());
+                            //refreshRoomsList(false);
+                            roomAdapter.removeLoading(true);
+                        }
+                    }
+                });
+    }
+
+    private void refreshRoomsList(boolean isSuccessful) {
+
     }
 
     private void d(String s) {
         mToast.cancel();
         mToast = Toast.makeText(this, s, Toast.LENGTH_LONG);
         mToast.show();
+    }
+
+    class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private LayoutInflater inf = LayoutInflater.from(PropertyDetailsActivity.this);
+        private List<Room> Rooms;
+        private final int LOADING = 0, NOT_LOADING = 1;
+
+        RoomAdapter() {
+            Rooms = new ArrayList<>();
+            Rooms.add(null);
+        }
+
+        void addRoom(Room room) {
+            int lastIndex = Rooms.size() - 1;
+            Rooms.remove(lastIndex);
+            Rooms.add(room);
+            notifyItemChanged(lastIndex);
+            Rooms.add(null);
+            notifyItemInserted(lastIndex + 1);
+        }
+
+        void removeLoading(boolean error) {
+            int lastIndex = Rooms.size() - 1;
+            Rooms.remove(lastIndex);
+            notifyItemRemoved(lastIndex);
+            if(error) {
+                d("Some error occurred");
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return Rooms.get(position) == null ? LOADING : NOT_LOADING;
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if(viewType == LOADING) {
+                View v = inf.inflate(R.layout.list_load, parent, false);
+                return new LoadingHolder(v);
+            }
+            else {
+                View v = inf.inflate(R.layout.list_rooms, parent, false);
+                return new RoomHolder(v);
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder tholder, int position) {
+            switch(tholder.getItemViewType()) {
+                case LOADING:
+
+                    break;
+                case NOT_LOADING:
+                    Room t = Rooms.get(position);
+
+                    RoomHolder holder = (RoomHolder) tholder;
+                    holder.roomNo.setText(getString(R.string.property_room_room_no, t.getRoomNo()));
+                    GlideApp.with(PropertyDetailsActivity.this).load(R.drawable.wifi).placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+
+                    Map<String, Boolean> m = t.getAmenities();
+                    holder.chip_room_ac.setVisibility(m.get(getString(R.string.chip_text_ac)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_tv.setVisibility(m.get(getString(R.string.chip_text_tv)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_balcony.setVisibility(m.get(getString(R.string.chip_text_balcony)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_wardrobe.setVisibility(m.get(getString(R.string.chip_text_wardrobe)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_washroom.setVisibility(m.get(getString(R.string.chip_text_attached_washroom)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_gyser.setVisibility(m.get(getString(R.string.chip_text_gyser)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_sofa.setVisibility(m.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_table.setVisibility(m.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
+
+                    //Put beds here
+
+                    break;
+            }
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return Rooms == null ? 0 : Rooms.size();
+        }
+
+        class RoomHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.property_room_photo) ImageView roomPhoto;
+            @BindView(R.id.property_room_room_no) TextView roomNo;
+
+            /* List of amenities */
+            @BindView(R.id.chip_AC) ImageView chip_room_ac;
+            @BindView(R.id.chip_TV) ImageView chip_room_tv;
+            @BindView(R.id.chip_balcony) ImageView chip_room_balcony;
+            @BindView(R.id.chip_wardrobe) ImageView chip_room_wardrobe;
+            @BindView(R.id.chip_washroom) ImageView chip_room_washroom;
+            @BindView(R.id.chip_Gyser) ImageView chip_room_gyser;
+            @BindView(R.id.chip_sofa) ImageView chip_room_sofa;
+            @BindView(R.id.chip_table) ImageView chip_room_table;
+
+            /* Beds are limited to 5 as of now */
+            ImageView bed1, bed2, bed3, bed4, bed5, bed6;
+
+            RoomHolder(View v) {
+                super(v);
+                ButterKnife.bind(this, v);
+            }
+        }
+
+        class LoadingHolder extends RecyclerView.ViewHolder {
+
+            LoadingHolder(View v) {
+                super(v);
+            }
+        }
     }
 }

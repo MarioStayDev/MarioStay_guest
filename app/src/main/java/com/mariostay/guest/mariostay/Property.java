@@ -4,14 +4,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.google.firebase.firestore.GeoPoint;
 
 class Property implements Parcelable {
-	private int PID, HID, Floors;
+	private String PID;
+	private int HID, Floors;
 	private int /* float */ MinStayTime, SecurityMultiplier, NoticePeriod;
-	private String Name, Type, Address, Landmark, ShortDescription, Rules;
-	private GeoPoint Location;
+	private String Name, Type, Address, Landmark, ShortDescription, Rules, inTime, outTime;
+	//private GeoPoint Location;
 	private Map<String, Boolean> Amenities;
 
 	Property() {
@@ -19,7 +21,7 @@ class Property implements Parcelable {
 	}
 
 	private Property(Parcel parcel) {
-		this.PID = parcel.readInt();
+		this.PID = parcel.readString();
 		this.HID = parcel.readInt();
 		this.Floors = parcel.readInt();
 
@@ -33,6 +35,8 @@ class Property implements Parcelable {
 		this.Landmark = parcel.readString();
 		this.ShortDescription = parcel.readString();
 		this.Rules = parcel.readString();
+		this.inTime = parcel.readString();
+		this.outTime = parcel.readString();
 		Amenities = new HashMap<>();
 		parcel.readMap(this.Amenities, null);
 	}
@@ -57,7 +61,7 @@ class Property implements Parcelable {
 		Amenities.putAll(map);
 	}*/
 
-	int getPID() { return PID; }
+	String getPID() { return PID; }
 	int getHID() { return HID; }
 	int getFloors() { return Floors; }
 	int getMinStayTime() { return MinStayTime; }
@@ -69,10 +73,13 @@ class Property implements Parcelable {
 	String getLandmark() { return Landmark; }
 	String getShortDescription() { return ShortDescription; }
 	String getRules() { return Rules; }
-	GeoPoint getLocation() {return Location; }
+	public String getInTime() { return inTime; }
+	public String getOutTime() { return outTime; }
+	//GeoPoint getLocation() {return Location; }
 	Map<String, Boolean> getAmenities() { return Amenities; }
+	//public List<Room> getRooms() { return rooms; }
 
-	void setPID(int pID) { PID = pID; }
+	void setPID(String pID) { PID = pID; }
 	void setHID(int hID) { HID = hID; }
 	void setFloors(int floors) { Floors = floors; }
 	void setMinStayTime(int minStayTime) { MinStayTime = minStayTime; }
@@ -84,8 +91,11 @@ class Property implements Parcelable {
 	void setLandmark(String landmark) { Landmark = landmark; }
 	void setShortDescription(String desc) { ShortDescription = desc; }
 	void setRules(String rules) { Rules = rules; }
-	void setLocation(GeoPoint location) {Location = location; }
+	public void setInTime(String in) { inTime = in; }
+	public void setOutTime(String in) { outTime = in; }
+	//void setLocation(GeoPoint location) {Location = location; }
 	void setAmenities(Map<String, Boolean> amenities) { Amenities.clear();Amenities.putAll(amenities); }
+	//public void setRooms(List<Room> r) { rooms.clear();if(r!=null)rooms.addAll(r); }
 
 	@Override
 	public int describeContents() {
@@ -94,7 +104,7 @@ class Property implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(this.PID);
+		dest.writeString(this.PID);
 		dest.writeInt(this.HID);
 		dest.writeInt(this.Floors);
 
@@ -108,6 +118,8 @@ class Property implements Parcelable {
 		dest.writeString(this.Landmark);
 		dest.writeString(this.ShortDescription);
 		dest.writeString(this.Rules);
+		dest.writeString(this.inTime);
+		dest.writeString(this.outTime);
 
 		dest.writeMap(Amenities);
 

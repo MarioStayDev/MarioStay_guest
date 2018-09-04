@@ -11,19 +11,26 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity implements BrowseFragment.OnFragmentInteractionListener {
 
-	static final String KEY_SHARED_PREFERENCE = "com.mariostay.guest.mariostay.KEY_SHARED_PREF", KEY_USER_NAME = "com.mariostay.guest.mariostay.KEY_USER_NAME", KEY_EMAIL = "com.mariostay.guest.mariostay.KEY_EMAIL";
-	private final String KEY_LOGGED_IN = "com.mariostay.guest.mariostay.KEY_LOGGED_IN", KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
+	//static final String KEY_SHARED_PREFERENCE = "com.mariostay.guest.mariostay.KEY_SHARED_PREF", KEY_USER_NAME = "com.mariostay.guest.mariostay.KEY_USER_NAME", KEY_EMAIL = "com.mariostay.guest.mariostay.KEY_EMAIL";
+	//private final String KEY_LOGGED_IN = "com.mariostay.guest.mariostay.KEY_LOGGED_IN";
+	final static String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
 	private final int REQUEST_LOGIN = 101;
-	private boolean userIsLoggedIn;
+	//private boolean userIsLoggedIn;
 	private FragmentManager mFragmentManager = getSupportFragmentManager();
-	private SharedPreferences prefMan;
+	//private SharedPreferences prefMan;
 	private Toast mToast;
 	private MenuItem prevMenuItem;
+
+	private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +47,25 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		bNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 			@Override
 			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-				if(!userIsLoggedIn) loginPrompt();
+				//if(!userIsLoggedIn) loginPrompt();
+				if(mAuth.getCurrentUser() == null) loginPrompt();
 				else switch(item.getItemId()) {
 					case R.id.navigation_search:
 						viewpager.setCurrentItem(0);
 						break;
-					case R.id.navigation_inbox:
+					/*case R.id.navigation_inbox:
 						viewpager.setCurrentItem(1);
 						break;
 					case R.id.navigation_shortlist:
 						viewpager.setCurrentItem(2);
-						break;
+						break;*/
 					case R.id.navigation_booking:
-						viewpager.setCurrentItem(3);
+						//viewpager.setCurrentItem(3);
+						viewpager.setCurrentItem(1);
 						break;
 					case R.id.navigation_profile:
-						viewpager.setCurrentItem(4);
+						//viewpager.setCurrentItem(4);
+						viewpager.setCurrentItem(2);
 						break;
 				}
 				return false;
@@ -88,29 +98,22 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 			}
 		});
 
-		/*
+		mAuth = FirebaseAuth.getInstance();
 
-		viewpager.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                return true;
-            }
-        });
+		if(mAuth.getCurrentUser() == null) {
+			Intent loginIntent = new Intent(this, LoginActivity.class);
+			startActivityForResult(loginIntent,REQUEST_LOGIN);
+		}
 
-		 */
-
-		prefMan = getSharedPreferences(KEY_SHARED_PREFERENCE,MODE_PRIVATE);
+		/*prefMan = getSharedPreferences(KEY_SHARED_PREFERENCE,MODE_PRIVATE);
 		userIsLoggedIn = prefMan.getBoolean(KEY_LOGGED_IN,false);
 		
 		if(!userIsLoggedIn) {
 			Intent loginIntent = new Intent(this, LoginActivity.class);
 			startActivityForResult(loginIntent,REQUEST_LOGIN);
-		}
+		}*/
 
 		mToast = new Toast(this);
-		//mToast = Toast.makeText(this, "Init", Toast.LENGTH_LONG);
     }
 
     private void setupViewPager(ViewPager v) {
@@ -123,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		v.setAdapter(adapter);
 	}
 
-    /*@Override
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		getMenuInflater().inflate(R.menu.menu_main,menu);
@@ -135,17 +138,18 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 	{
 		switch(item.getItemId()) {
 			case R.id.menu_logout:
-				prefMan.edit().putBoolean(KEY_LOGGED_IN,false).remove(KEY_USER_NAME).remove(KEY_EMAIL).apply();
-				userIsLoggedIn = false;
+				/*prefMan.edit().putBoolean(KEY_LOGGED_IN,false).remove(KEY_USER_NAME).remove(KEY_EMAIL).apply();
+				userIsLoggedIn = false;*/
+				mAuth.signOut();
 				Intent loginIntent = new Intent(this, LoginActivity.class);
 				startActivityForResult(loginIntent,REQUEST_LOGIN);
 				return true;
-			case android.R.id.home:
+			/*case android.R.id.home:
 				mDrawerLayout.openDrawer(GravityCompat.START);
-				return true;
+				return true;*/
 		}
 		return super.onOptionsItemSelected(item);
-	}*/
+	}
 
 	private void loginPrompt() {
 		d("You are not logged in");
@@ -165,12 +169,13 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		switch(requestCode) {
 			case REQUEST_LOGIN:
 				if(resultCode==RESULT_OK) {
-					prefMan.edit().putBoolean(KEY_LOGGED_IN,true).apply();
+					/*prefMan.edit().putBoolean(KEY_LOGGED_IN,true).apply();
 					userIsLoggedIn=true;
-					if(data !=null && !data.getBooleanExtra("GUEST", false)) d("Logged in");
+					if(data !=null && !data.getBooleanExtra("GUEST", false)) d("Logged in");*/
 					//mFragment = new BrowseFragment();
 					//mFragmentManager.beginTransaction().replace(R.id.frame, mFragment).commit();
-					
+					FirebaseUser user = mAuth.getCurrentUser();
+					if(user == null) finish();
 				}
 				else
 					finish();

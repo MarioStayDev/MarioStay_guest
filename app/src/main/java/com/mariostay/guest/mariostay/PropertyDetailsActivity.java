@@ -1,13 +1,18 @@
 package com.mariostay.guest.mariostay;
 
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,13 +21,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -30,16 +40,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 
 public class PropertyDetailsActivity extends AppCompatActivity {
 
+    private boolean first;
     private FirebaseFirestore db;
-    private final String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
+    //private final String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
     private MenuItem favicon;
     private Property property;
+    private AlertDialog alertRules;
     //private List<Room> Rooms;
     //@BindViews({R.id.chip1, R.id.chip2, R.id.chip3, R.id.chip4, R.id.chip5, R.id.chip6, R.id.chip7, R.id.chip8, R.id.chip9, R.id.chip10, R.id.chip11, R.id.chip12, R.id.chip13, R.id.chip14, R.id.chip15})
     //List<ImageView> chips;
@@ -67,6 +81,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
     @BindView(R.id.property_details_security_deposit) TextView securityDeposit;
     @BindView(R.id.property_details_notice_period) TextView noticePeriod;
     @BindView(R.id.property_details_min_stay) TextView minTime;
+    @BindView(R.id.property_details_rules) TextView rules;
     @BindView(R.id.property_details_rooms_container) RecyclerView frame;
     private Toast mToast;
     private RoomAdapter roomAdapter;
@@ -81,12 +96,15 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
-        property = getIntent().getParcelableExtra(KEY_PROPERTY);
-        actionBar.setTitle(property.getName());
+            property = getIntent().getParcelableExtra(MainActivity.KEY_PROPERTY);
+            actionBar.setTitle(property.getName());
+        }
 
         db = FirebaseFirestore.getInstance();
+        first = true;
         init();
     }
 
@@ -118,9 +136,20 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void init () {
+    private void initData () {
         desc.setText(property.getShortDescription());
         Map<String, Boolean> imap = property.getAmenities();
+
+        AlertDialog.Builder albu = new AlertDialog.Builder(this);
+        albu.setTitle(getString(R.string.property_details_rules_alert));
+        albu.setMessage(property.getRules() == null ? getString(R.string.property_details_rules_absent) : property.getRules());
+        albu.setPositiveButton(R.string.OK_BUTTON, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertRules = albu.create();
         //System.out.println(imap.toString());
         /*System.out.println("Property is "+(property == null ? "" : "not ")+"null");
         System.out.println("Map is "+(imap == null ? "" : "not ")+"null");
@@ -148,7 +177,23 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         securityDeposit.setText(getString(R.string.property_details_security_deposit, property.getSecurityMultiplier()));
         noticePeriod.setText(getString(R.string.property_details_notice_period, property.getNoticePeriod()));
         minTime.setText(getString(R.string.property_details_min_stay_time, property.getMinStayTime()));
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(getString(R.string.property_details_rules));
+        sb.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                //d("Dialogue");
 
+                alertRules.show();
+            }
+        }, 8, 12, 0);
+        rules.setMovementMethod(LinkMovementMethod.getInstance());
+        rules.setText(sb);
+
+    }
+
+    private void init() {
+        //initData();
         //Rooms = new ArrayList<>();
         roomAdapter = new RoomAdapter();
         frame.setLayoutManager(new LinearLayoutManager(this) {
@@ -159,7 +204,8 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         });
         frame.setAdapter(roomAdapter);
         //roomAdapter.addRoom(null);
-        db.collection("properties").document(property.getPID()).collection("rooms")
+        DocumentReference doc = db.collection("properties").document(property.getPID());
+        doc.collection("rooms")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -179,11 +225,34 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        doc.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.w("TAG", "listen:error", e);
+                    return;
+                }
+
+                if(documentSnapshot != null && documentSnapshot.exists()) {
+                    Property np = documentSnapshot.toObject(Property.class);
+                    if(first) first = false;
+                    else d("This property was updated");
+                    property = null;
+                    property = np;
+                    initData();
+                }
+                else {
+                    d("This property no longer exists");
+                    finish();
+                }
+            }
+        });
     }
 
-    private void refreshRoomsList(boolean isSuccessful) {
+    /*private void refreshRoomsList(boolean isSuccessful) {
 
-    }
+    }*/
 
     private void d(String s) {
         mToast.cancel();
@@ -249,7 +318,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
                     RoomHolder holder = (RoomHolder) tholder;
                     holder.roomNo.setText(getString(R.string.property_room_room_no, t.getRoomNo()));
-                    GlideApp.with(PropertyDetailsActivity.this).load(R.drawable.wifi).placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+                    GlideApp.with(PropertyDetailsActivity.this).load(R.drawable.ph).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
 
                     Map<String, Boolean> m = t.getAmenities();
                     holder.chip_room_ac.setVisibility(m.get(getString(R.string.chip_text_ac)) ? View.VISIBLE : View.GONE);
@@ -262,6 +331,14 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                     holder.chip_room_table.setVisibility(m.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
 
                     //Put beds here
+                    holder.bed_con.removeAllViews();
+                    List<Integer> mbeds = t.getBedStats();
+                    for(int i : mbeds) {
+                        ImageView iv = new ImageView(PropertyDetailsActivity.this);
+                        iv.setLayoutParams(new LinearLayout.LayoutParams(250, 250));
+                        iv.setImageResource(i == 0 ? R.drawable.bed/*av*/ : R.drawable.bed_un/*unav*/);
+                        holder.bed_con.addView(iv);
+                    }
 
                     break;
             }
@@ -288,6 +365,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
             @BindView(R.id.chip_table) ImageView chip_room_table;
 
             /* Beds are limited to 5 as of now */
+            @BindView(R.id.property_room_beds) FlexboxLayout bed_con;
             ImageView bed1, bed2, bed3, bed4, bed5, bed6;
 
             RoomHolder(View v) {

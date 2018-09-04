@@ -27,7 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/text_back" />
 
         </RelativeLayout>
 
@@ -36,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <me.zhanghai.android.materialratingbar.MaterialRatingBar
+            <!--<me.zhanghai.android.materialratingbar.MaterialRatingBar
                 android:id="@+id/property_item_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,14 +50,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/property_item_rating"
-                android:layout_toEndOf="@id/property_item_rating"/>
+                android:layout_toEndOf="@id/property_item_rating"/>-->
 
             <TextView
                 android:id="@+id/property_item_rent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@id/property_item_rating"/>
+                android:layout_alignParentBottom="true"/>
+                <!--android:layout_below="@id/property_item_rating"/>-->
 
         </RelativeLayout>
 

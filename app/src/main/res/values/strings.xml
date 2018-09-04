@@ -82,4 +82,8 @@
     <string name="property_details_min_stay_time">Min stay time : %1$d months</string>
     <string name="property_details_contact_host">Contact host : Chat</string>
     <string name="property_room_room_no">Room no : %1$d</string>
+    <string name="property_details_rules">Rules : Read</string>
+    <string name="property_details_rules_alert">Rules</string>
+    <string name="OK_BUTTON">OK</string>
+    <string name="property_details_rules_absent">&lt;No rules mentioned by host&gt;</string>
 </resources>

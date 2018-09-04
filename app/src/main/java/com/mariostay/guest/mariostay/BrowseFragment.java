@@ -2,11 +2,14 @@ package com.mariostay.guest.mariostay;
 
 import android.content.Context;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,11 +24,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +50,8 @@ public class BrowseFragment extends Fragment {
     private Unbinder unbinder;
 
     private FirebaseFirestore db;
-    private FirestoreRecyclerAdapter adapter;
+    //private FirestoreRecyclerAdapter adapter;
+    private PropertyAdapter adapter;
 
     private Toast mToast;
     private NumberFormat format;
@@ -74,9 +85,31 @@ public class BrowseFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        Query q = db.collection("properties");
 
-        FirestoreRecyclerOptions<Property> res = new FirestoreRecyclerOptions.Builder<Property>()
+        adapter = new PropertyAdapter(getContext());
+
+        //Query q = db.collection("properties").whereGreaterThan("rooms", 0);
+        CollectionReference props = db.collection("properties");
+        props.whereGreaterThan("rooms", 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    Log.d("BrowseFragment", "Query rooms successful");
+
+                    progressBar.setVisibility(View.GONE);
+                    for(QueryDocumentSnapshot doc : task.getResult()) {
+                        adapter.addProperty(doc.toObject(Property.class));
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    Log.d("BrowseFragment", "Query rooms failed", task.getException());
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        /*FirestoreRecyclerOptions<Property> res = new FirestoreRecyclerOptions.Builder<Property>()
                 .setQuery(q, Property.class).build();
 
         adapter = new FirestoreRecyclerAdapter<Property, PropertyHolder>(res) {
@@ -86,8 +119,8 @@ public class BrowseFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 final int actualPosition = holder.getAdapterPosition();
                 holder.propName.setText(model.getName());
-                //holder.rating.setRating(3.5);
-                holder.reviews.setText(getString(R.string.property_reviews, 6));
+                /*holder.rating.setRating(3.5);
+                holder.reviews.setText(getString(R.string.property_reviews, 6));**
                 holder.rent.setText(getString(R.string.property_rent, format.format(10000)));
                 //Glide.with(getActivity()).load(model.image).into(holder.imgview);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -113,17 +146,138 @@ public class BrowseFragment extends Fragment {
                 super.onError(e);
                 Log.e("error", e.getMessage());
             }
-        };
+        };*/
 
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
+
+        props.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TAG", "Listen failed.", e);
+                    return;
+                }
+
+                /*List<String> cities = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : value) {
+                    if (doc.get("name") != null) {
+                        cities.add(doc.getString("name"));
+                    }
+                }
+                Log.d("TAG", "Current cites in CA: " + cities);*/
+                for(DocumentChange dc : value.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            adapter.addProperty(dc.getDocument().toObject(Property.class));
+                            adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                            break;
+                        case MODIFIED:
+                            Property p = dc.getDocument().toObject(Property.class);
+                            if(adapter.replaceProperty(p) < 0) {
+                                Log.d("TAG", "Error updating pid:" + p.getPID());
+                            }
+                            break;
+                        case REMOVED:
+                            Property p1 = dc.getDocument().toObject(Property.class);
+                            if(adapter.removeProperty(p1) < 0) {
+                                Log.d("TAG", "Error removing pid:" + p1.getPID());
+                            }
+                    }
+                }
+            }
+        });
     }
 
-    /*public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.PropertyHolder> {
+        List<Property> properties;
+        LayoutInflater layoutInflater;
+
+        PropertyAdapter(Context context) {
+            layoutInflater = LayoutInflater.from(context);
+            properties = new ArrayList<>();
         }
-    }*/
+
+        @NonNull
+        @Override
+        public PropertyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new PropertyHolder(layoutInflater.inflate(R.layout.property_item, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PropertyHolder holder, int position) {
+            final Property model = properties.get(position);
+
+            holder.propName.setText(model.getName());
+            /*holder.rating.setRating(3.5);
+            holder.reviews.setText(getString(R.string.property_reviews, 6));*/
+            holder.rent.setText(getString(R.string.property_rent, format.format(model.getRent())));
+            //Glide.with(getActivity()).load(model.image).into(holder.imgview);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //d("Clicked pos " + actualPosition);
+                    Bundle bundle = new Bundle();
+                    //bundle.putString(KEY_PROPERTY, model.getPID());
+                    bundle.putParcelable(KEY_PROPERTY, model);
+                    mListener.onPropertyClicked(bundle);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return properties == null ? 0 : properties.size();
+        }
+
+        void addProperty(Property property) {
+            properties.add(property);
+            //notifyItemInserted(properties.indexOf(property));
+        }
+
+        int replaceProperty(Property property) {
+            int pos = -1;
+            String pid = property.getPID();
+            for(Property p : properties) {
+                if(pid.equals(p.getPID())) {
+                    pos = properties.indexOf(p);
+                    properties.remove(pos);
+                    properties.add(pos, property);
+                    notifyItemChanged(pos);
+                    break;
+                }
+            }
+            return pos;
+        }
+
+        int removeProperty(Property property) {
+            int pos = -1;
+            String pid = property.getPID();
+            for(Property p : properties) {
+                if(pid.equals(p.getPID())) {
+                    pos = properties.indexOf(p);
+                    properties.remove(pos);
+                    notifyItemRemoved(pos);
+                    break;
+                }
+            }
+            return pos;
+        }
+
+        class PropertyHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.property_item_name) TextView propName;
+            @BindView(R.id.property_item_rent) TextView rent;
+            /*@BindView(R.id.property_item_reviews) TextView reviews;
+            @BindView(R.id.property_item_rating) MaterialRatingBar rating;*/
+            //@BindView(R.id.property_item_pic) ImageView pic;
+
+            PropertyHolder(View v) {
+                super(v);
+                ButterKnife.bind(this,v);
+            }
+        }
+    }
 
     @Override
     public void onDestroyView() {
@@ -182,30 +336,30 @@ public class BrowseFragment extends Fragment {
         mToast.show();
     }
 
-    class PropertyHolder extends RecyclerView.ViewHolder {
+    /*class PropertyHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.property_item_name) TextView propName;
         @BindView(R.id.property_item_rent) TextView rent;
-        @BindView(R.id.property_item_reviews) TextView reviews;
-        @BindView(R.id.property_item_rating) MaterialRatingBar rating;
+        /*@BindView(R.id.property_item_reviews) TextView reviews;
+        @BindView(R.id.property_item_rating) MaterialRatingBar rating;**
         //@BindView(R.id.property_item_pic) ImageView pic;
 
         PropertyHolder(View v) {
             super(v);
             ButterKnife.bind(this,v);
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        //adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
-    }
+        //adapter.stopListening();
+    }*/
 }
 
     

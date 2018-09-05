@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,10 +47,12 @@ public class BrowseFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     @BindView(R.id.browse_recycler) RecyclerView rv;
-    @BindView(R.id.browse_progress) ProgressBar progressBar;
+    //@BindView(R.id.browse_progress) ProgressBar progressBar;
+    @BindView(R.id.browse_progress) TextView progressBar;
     private Unbinder unbinder;
 
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
     //private FirestoreRecyclerAdapter adapter;
     private PropertyAdapter adapter;
 
@@ -79,6 +82,7 @@ public class BrowseFragment extends Fragment {
 
         rv.setItemAnimator(new DefaultItemAnimator());
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         setupAdapter();
 
         return v;
@@ -90,7 +94,7 @@ public class BrowseFragment extends Fragment {
 
         //Query q = db.collection("properties").whereGreaterThan("rooms", 0);
         CollectionReference props = db.collection("properties");
-        props.whereGreaterThan("rooms", 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        /*props.whereGreaterThan("rooms", 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
@@ -107,7 +111,7 @@ public class BrowseFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                 }
             }
-        });
+        });*/
 
         /*FirestoreRecyclerOptions<Property> res = new FirestoreRecyclerOptions.Builder<Property>()
                 .setQuery(q, Property.class).build();
@@ -167,22 +171,40 @@ public class BrowseFragment extends Fragment {
                     }
                 }
                 Log.d("TAG", "Current cites in CA: " + cities);*/
+                Property p;
                 for(DocumentChange dc : value.getDocumentChanges()) {
                     switch (dc.getType()) {
                         case ADDED:
-                            adapter.addProperty(dc.getDocument().toObject(Property.class));
-                            adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                            p = dc.getDocument().toObject(Property.class);
+                            Log.d("TAG", "Property added : " + p.getPID());
+                            if(p.getRooms() > 0) {
+                                adapter.addProperty(p);
+                                adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                if(adapter.getItemCount() > 0 && progressBar.getVisibility() == View.VISIBLE) progressBar.setVisibility(View.GONE);
+                            }
+                            else Log.d("TAG", "no rooms in : " + p.getPID());
                             break;
                         case MODIFIED:
-                            Property p = dc.getDocument().toObject(Property.class);
-                            if(adapter.replaceProperty(p) < 0) {
+                            p = dc.getDocument().toObject(Property.class);
+                            Log.d("TAG", "Property modified : " + p.getPID() + ", rooms : " + p.getRooms());
+                            if(p.getRooms() > 0 && adapter.replaceProperty(p) < 0) {
                                 Log.d("TAG", "Error updating pid:" + p.getPID());
+                                Log.d("TAG", "Trying to add it");
+                                adapter.addProperty(p);
+                                adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                progressBar.setVisibility(View.GONE);
+                            }
+                            else if(p.getRooms() == 0) {
+                                if (adapter.removeProperty(p) < 0) Log.d("TAG", "Error removing pid:" + p.getPID());
+                                else if(adapter.getItemCount() == 0 && progressBar.getVisibility() == View.GONE) progressBar.setVisibility(View.VISIBLE);
                             }
                             break;
                         case REMOVED:
-                            Property p1 = dc.getDocument().toObject(Property.class);
-                            if(adapter.removeProperty(p1) < 0) {
-                                Log.d("TAG", "Error removing pid:" + p1.getPID());
+                            p = dc.getDocument().toObject(Property.class);
+                            Log.d("TAG", "Property removed : " + p.getPID());
+                            if(p.getRooms() > 0) {
+                                if (adapter.removeProperty(p) < 0) Log.d("TAG", "Error removing pid:" + p.getPID());
+                                else if(adapter.getItemCount() == 0 && progressBar.getVisibility() == View.GONE) progressBar.setVisibility(View.VISIBLE);
                             }
                     }
                 }

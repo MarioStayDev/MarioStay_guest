@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:fitsSystemWindows="true"
 	android:background="@drawable/bg"
@@ -12,19 +13,19 @@
 		android:gravity="center"
 		android:orientation="vertical">
 
-		<RelativeLayout
+		<!--<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<de.hdodenhof.circleimageview.CircleImageView
-				android:id="@+id/ProPic"
-				android:layout_width="150dp"
-				android:layout_height="143dp"
-				android:layout_alignParentTop="true"
-				android:layout_centerHorizontal="true"
-				app:srcCompat="@drawable/ic_photo_camera_black_24dp"
-				app:civ_border_color="@color/colorAccent"
-				app:civ_border_width="3dp" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ProPic"
+                android:layout_width="150dp"
+                android:layout_height="143dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                app:civ_border_color="@color/colorAccent"
+                app:civ_border_width="3dp"
+                app:srcCompat="@drawable/ic_account_black" />
 
 			<android.support.design.widget.FloatingActionButton
 				android:id="@+id/SearchPic"
@@ -38,7 +39,7 @@
 				android:layout_marginTop="111dp"
 				app:srcCompat="@drawable/ic_add_black_24dp" />
 
-		</RelativeLayout>
+		</RelativeLayout>-->
 
 		<EditText
 			android:id="@+id/s_user"
@@ -153,15 +154,19 @@
 				android:inputType="phone"
 				android:maxLines="1" />
 
+			<!-- DO NOT DELETE,
+				WILL BE USED IN A FUTURE UPDATE
+
 			<Button
 				android:id="@+id/s_button_send"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:onClick="send_otp"
-				android:text="@string/button_otp" />
+				android:text="@string/button_otp" /> -->
 
 		</LinearLayout>
 
+		<!-- AND THIS TOO!
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -180,7 +185,7 @@
 			android:hint="@string/prompt_otp"
 			android:inputType="number"
 			android:maxLength="@integer/otp_length"
-			android:maxLines="1" />
+			android:maxLines="1" /> -->
 
 		<Space
 			android:layout_width="wrap_content"
@@ -192,8 +197,8 @@
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="8dp"
 			android:background="@drawable/ripple_red"
-			android:enabled="false"
 			android:text="@string/button_signup" />
+		<!--android:enabled="false"-->
 
 	</LinearLayout>
 

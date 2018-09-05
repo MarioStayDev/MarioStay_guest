@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -74,30 +75,35 @@ public class LoginActivity extends AppCompatActivity
 				Editable n,p;
 				n = mEmail.getText();
 				p = mPassword.getText();
-				if(TextUtils.isEmpty(n))
-					d("Username required");
-				else if(TextUtils.isEmpty(p))
-					d("Password required");
-				else
+				if(TextUtils.isEmpty(n)) d("Username required");
+				else if(TextUtils.isEmpty(p)) d("Password required");
+				else if(!Patterns.EMAIL_ADDRESS.matcher(n).matches()) d("Invalid email address");
+				else {
+					buttonLogin.setEnabled(false);
+					buttonSignup.setEnabled(false);
 					mAuth.signInWithEmailAndPassword(n.toString(), p.toString())
-						.addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-							@Override
-							public void onComplete(@NonNull Task<AuthResult> task) {
-								if(task.isSuccessful()) {
-									//FirebaseUser user = mAuth.getCurrentUser();
-									Log.d("TAG", "signInWithEmail:success");
-									setResult(RESULT_OK);
-									finish();
+							.addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+								@Override
+								public void onComplete(@NonNull Task<AuthResult> task) {
+									if (task.isSuccessful()) {
+										//FirebaseUser user = mAuth.getCurrentUser();
+										Log.d("TAG", "signInWithEmail:success");
+										setResult(RESULT_OK);
+										finish();
+									} else {
+										buttonLogin.setEnabled(true);
+										buttonSignup.setEnabled(true);
+										Log.d("TAG", "signInWithEmail:error", task.getException());
+										Exception e = task.getException();
+										if (e instanceof FirebaseAuthInvalidUserException)
+											d("Invalid username");
+										else if (e instanceof FirebaseAuthInvalidCredentialsException)
+											d("Invalid password");
+										else d("Some error occurred");
+									}
 								}
-								else {
-									Log.d("TAG", "signInWithEmail:error", task.getException());
-									Exception e = task.getException();
-									if(e instanceof FirebaseAuthInvalidUserException) d("Invalid username");
-									else if(e instanceof FirebaseAuthInvalidCredentialsException) d("Invalid password");
-									else d("Some error occurred");
-								}
-							}
-						});
+							});
+				}
 				/*if("".equals(n))
 					d("Username required");
 				else if("".equals(p))
@@ -122,7 +128,10 @@ public class LoginActivity extends AppCompatActivity
 		unbinder.unbind();
 	}
 
+	/* DO NOT DELETE,
+		COMING SOON IN A FUTURE UPDATE
 	public void guest(View v) {
+
 		mAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 			@Override
 			public void onComplete(@NonNull Task<AuthResult> task) {
@@ -141,8 +150,8 @@ public class LoginActivity extends AppCompatActivity
 		/*Intent data = new Intent();
 		data.putExtra("GUEST", true);
 		setResult(RESULT_OK, data);
-		finish();*/
-	}
+		finish();**
+	}*/
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)

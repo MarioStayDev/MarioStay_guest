@@ -120,9 +120,9 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		ViewPagerAdapter adapter = new ViewPagerAdapter(mFragmentManager);
 		adapter.addFragment(new BrowseFragment());
 		adapter.addFragment(new Fragment());
-		adapter.addFragment(new Fragment());
-		adapter.addFragment(new Fragment());
-		adapter.addFragment(new Fragment());
+		adapter.addFragment(new ProfileFragment());
+		/*adapter.addFragment(new Fragment());
+		adapter.addFragment(new Fragment());*/
 		v.setAdapter(adapter);
 	}
 

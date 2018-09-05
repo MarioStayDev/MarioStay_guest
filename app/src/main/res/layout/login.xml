@@ -61,12 +61,14 @@
 			android:background="@drawable/ripple_green"
 			android:text="@string/button_signup" />
 
+		<!-- DO NO DELETE,
+			COMING SOON IN A FUTURE UPDATE
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/button_guest"
 			android:onClick="guest"
-			style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+			style="@style/Base.Widget.AppCompat.Button.Borderless"/> -->
 
 	</LinearLayout>
 

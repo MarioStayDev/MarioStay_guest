@@ -1,6 +1,6 @@
 <resources>
     <!-- Name of application -->
-    <string name="app_name">MarioStay</string>
+    <string name="app_name">MarioStay_Guest</string>
 
     <!-- Headings and titles -->
     <string name="title_activity_test">TestActivity</string>

@@ -23,6 +23,7 @@
             app:toolbarId="@+id/toolbar">
 
             <com.mariostay.guest.mariostay.SquareImageView
+                android:id="@+id/property_details_prop_pic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
@@ -37,13 +38,34 @@
                 app:srcCompat="@drawable/wifi"
                 android:contentDescription="@string/image_description_property"/>-->
 
+
+
+
+            <!--<View
+                android:layout_width="match_parent"
+                android:layout_height="88dp"
+                android:background="@drawable/scrim_top"
+                app:layout_collapseMode="pin"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="88dp"
+                android:layout_gravity="bottom"
+                android:layout_alignBottom="@+id/image"
+                android:background="@drawable/scrim_bottom"/>-->
+
+
+
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/property_details_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
-            <!--android:layout_height="?android:attr/actionBarSize"-->
+            <!--android:layout_height="?android:attr/actionBarSize"
+
+                android:background="@drawable/scrim"-->
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

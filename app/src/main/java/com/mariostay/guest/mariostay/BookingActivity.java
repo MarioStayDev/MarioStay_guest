@@ -18,6 +18,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -28,6 +31,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -38,13 +43,17 @@ public class BookingActivity extends AppCompatActivity {
     private Room room;
     private FirebaseFirestore db;
     private FirebaseMessaging fm;
+    private FirebaseAuth fa;
     private Dialog dialog;
     private Toast mToast;
+    private String uid;
     @BindView(R.id.booking_toolbar) Toolbar toolbar;
     @BindView(R.id.booking_date_dispaly) TextView b_date;
     @BindView(R.id.booking_screen_account_details) TextView accno;
     @BindView(R.id.booking_screen_tnc) CheckBox tnc;
     @BindView(R.id.booking_screen_book) Button book;
+
+    private CollectionReference requestsCollection;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +73,7 @@ public class BookingActivity extends AppCompatActivity {
         toolbar.setTitle(property.getName());
         toolbar.setSubtitle(getString(R.string.booking_screen_floor_display, room.getRoomNo(), room.getFloor()));
         b_date.setText(getString(R.string.booking_screen_date_dispaly, SimpleDateFormat.getDateInstance().format(Calendar.getInstance().getTime())));
+
         tnc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -74,13 +84,26 @@ public class BookingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //searchAndNotifyHost();
-                if(dialog != null) dialog.show();
+                if(dialog == null) return;
+                //String uid = fa.getCurrentUser().getUid();
+                if(uid == null) {
+                    d("Unable to get Profile ID");
+                    return;
+                }
+                dialog.show();
+                Map<String, String> rMap = new HashMap<>();
+                rMap.put("date", new Date().toString());
+                requestsCollection.document(uid).set(rMap);
+                //db.collection("properties").document(property.getPID()).collection("rooms").document(room.getRoomId()).update("status", 1);
             }
         });
 
         mToast = new Toast(this);
         db = FirebaseFirestore.getInstance();
         //fm = FirebaseMessaging.getInstance();
+        fa = FirebaseAuth.getInstance();
+        FirebaseUser fu = fa.getCurrentUser();
+        if(fu != null) uid = fu.getUid();
 
         db.collection("USERS").document(property.getHID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -121,6 +144,8 @@ public class BookingActivity extends AppCompatActivity {
                 }
             }
         });
+
+        requestsCollection = db.collection("propertyRequests").document(property.getPID()).collection("requests");
     }
 
     private void d(String s) {

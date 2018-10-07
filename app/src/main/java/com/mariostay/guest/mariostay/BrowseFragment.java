@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,6 +38,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -235,7 +238,8 @@ public class BrowseFragment extends Fragment {
             /*holder.rating.setRating(3.5);
             holder.reviews.setText(getString(R.string.property_reviews, 6));*/
             holder.rent.setText(getString(R.string.property_rent, format.format(model.getRent())));
-            //Glide.with(getActivity()).load(model.image).into(holder.imgview);
+            StorageReference ref = storage.getReference("/users/PropertyPic/" + model.getPID() + "/0.jpg");
+            GlideApp.with(getActivity()).load(ref).placeholder(R.drawable.ic_launcher_background).into(holder.pic);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -292,7 +296,7 @@ public class BrowseFragment extends Fragment {
             @BindView(R.id.property_item_rent) TextView rent;
             /*@BindView(R.id.property_item_reviews) TextView reviews;
             @BindView(R.id.property_item_rating) MaterialRatingBar rating;*/
-            //@BindView(R.id.property_item_pic) ImageView pic;
+            @BindView(R.id.property_item_pic) ImageView pic;
 
             PropertyHolder(View v) {
                 super(v);

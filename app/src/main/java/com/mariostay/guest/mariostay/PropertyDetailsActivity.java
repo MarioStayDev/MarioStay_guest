@@ -39,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
     private boolean first;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
     static final String KEY_ROOM = "com.mariostay.guest.mariostay.KEY_ROOM";
     private MenuItem favicon;
     private Property property;
@@ -87,6 +90,8 @@ public class PropertyDetailsActivity extends AppCompatActivity {
     @BindView(R.id.property_details_min_stay) TextView minTime;
     @BindView(R.id.property_details_rules) TextView rules;
     @BindView(R.id.property_details_rooms_container) RecyclerView frame;
+
+    @BindView(R.id.property_details_prop_pic) ImageView propPic;
     private Toast mToast;
     private RoomAdapter roomAdapter;
 
@@ -108,6 +113,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         }
 
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         first = true;
         init();
     }
@@ -173,25 +179,6 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         chip_wifi.setVisibility(imap.get(getString(R.string.chip_text_wifi)) ? View.VISIBLE : View.GONE);
         chip_sofa.setVisibility(imap.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
         chip_table.setVisibility(imap.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
-        /*
-              _
-             | |
-             | |===( )   //////
-             |_|   |||  | o o|
-                    ||| ( c  )                  ____
-                     ||| \= /                  ||   \_
-                      ||||||                   ||     |
-                      ||||||                ...||__/|-"
-                      ||||||             __|________|__
-                        |||             |______________|
-                        |||             || ||      || ||
-                        |||             || ||      || ||
-------------------------|||-------------||-||------||-||-------
-                        |__>            || ||      || ||
-
-
-     NullPointerException
-         */
 
         String temp = property.getInTime();
         inTime.setText(getString(R.string.in_time_flexible, temp == null || temp.length() == 0 || temp.equals("0") ? "Flexible" : temp));
@@ -218,6 +205,10 @@ public class PropertyDetailsActivity extends AppCompatActivity {
     private void init() {
         //initData();
         //Rooms = new ArrayList<>();
+        StorageReference ref = storage.getReference("/users/PropertyPic/" + property.getPID() + "/0.jpg");
+        GlideApp.with(this).load(ref).placeholder(R.drawable.ic_launcher_background).into(propPic);
+
+
         roomAdapter = new RoomAdapter();
         frame.setLayoutManager(new LinearLayoutManager(this) {
             @Override
@@ -341,7 +332,17 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
                     RoomHolder holder = (RoomHolder) tholder;
                     holder.roomNo.setText(getString(R.string.property_room_room_no, t.getRoomNo()));
-                    GlideApp.with(PropertyDetailsActivity.this).load(R.drawable.ph).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+
+                    StorageReference ref0 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/0.jpg");
+                    StorageReference ref1 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/1.jpg");
+                    StorageReference ref2 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/2.jpg");
+                    StorageReference ref3 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/3.jpg");
+
+                    GlideApp.with(PropertyDetailsActivity.this).load(ref0).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+                    GlideApp.with(PropertyDetailsActivity.this).load(ref0).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb0);
+                    GlideApp.with(PropertyDetailsActivity.this).load(ref1).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb1);
+                    GlideApp.with(PropertyDetailsActivity.this).load(ref2).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb2);
+                    GlideApp.with(PropertyDetailsActivity.this).load(ref3).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb3);
 
                     Map<String, Boolean> m = t.getAmenities();
                     holder.chip_room_ac.setVisibility(m.get(getString(R.string.chip_text_ac)) ? View.VISIBLE : View.GONE);
@@ -352,22 +353,6 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                     holder.chip_room_gyser.setVisibility(m.get(getString(R.string.chip_text_gyser)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_sofa.setVisibility(m.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_table.setVisibility(m.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
-                    /*                                                                .
-                                                .--.       .--.                      /|\
-                                            _  `    \     /    `  _                   |
-                                             `\.===. \.^./ .===./`                    |
-                                                    \/`"`\/                           |
-                                                 ,  | --- |  ,                        |
-                                                / `\|;-.-'|/` \                       |
-                                               /    |::\  |    \      ----a tiny bug--
-                                            .-' ,-'`|:::; |`'-, '-.
-                                                |   |::::\|   |
-                                                |   |::::;|   |
-                                                |   \:::://   |
-                                                |    `.://'   |
-                                               .'             `.
-                                            _,'                 `,_
-                     */
 
                     //Put beds here
                     holder.bed_con.removeAllViews();
@@ -382,6 +367,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                         //iv.setImageResource(i == 0 ? R.drawable.bed/*av** : R.drawable.bed_un/*unav**);
                         holder.bed_con.addView(iv);
                     }*/
+                    int imgRight = 200, imgBottom = 200;
                     for(int i : mbeds) {
                         TextView iv = new TextView(PropertyDetailsActivity.this);
                         iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -389,20 +375,33 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                         if(i == 0) {
                             iv.setText(String.valueOf(t.getRent()));
                             Drawable d = getResources().getDrawable(R.drawable.bed);
-                            d.setBounds(10, 10, 10, 10);
-                            iv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
-                            if(!holder.buttonBook.isEnabled()) holder.buttonBook.setEnabled(true);
+                            d.setBounds(0, 0, imgRight, imgBottom);
+                            iv.setCompoundDrawables(null, d, null, null);
+                            //if(!holder.buttonBook.isEnabled()) holder.buttonBook.setEnabled(true);
+
+                            iv.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    Intent i = new Intent(PropertyDetailsActivity.this, BookingActivity.class);
+                                    i.putExtra(MainActivity.KEY_PROPERTY, property);
+                                    i.putExtra(KEY_ROOM, t);
+                                    startActivity(i);
+
+                                }
+                            });
+                            iv.setClickable(true);
+                            //iv.setBackgroundResource(android.R.attr.selectableItemBackground);
                         } else {
-                            iv.setText("booked");
+                            iv.setText("not available");
                             Drawable d = getResources().getDrawable(R.drawable.bed_un);
-                            d.setBounds(10, 10, 10, 10);
-                            iv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
+                            d.setBounds(0, 0, imgRight, imgBottom);
+                            iv.setCompoundDrawables(null, d, null, null);
                         }
-                        //iv.setImageResource(i == 0 ? R.drawable.bed/*av*/ : R.drawable.bed_un/*unav*/);
                         holder.bed_con.addView(iv);
                     }
 
-                    holder.buttonBook.setOnClickListener(new View.OnClickListener() {
+                    /*holder.buttonBook.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(PropertyDetailsActivity.this, BookingActivity.class);
@@ -410,7 +409,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                             i.putExtra(KEY_ROOM, t);
                             startActivity(i);
                         }
-                    });
+                    });*/
                     break;
             }
 
@@ -435,9 +434,14 @@ public class PropertyDetailsActivity extends AppCompatActivity {
             @BindView(R.id.chip_sofa) ImageView chip_room_sofa;
             @BindView(R.id.chip_table) ImageView chip_room_table;
 
+            @BindView(R.id.room_pic_thumb0) ImageView tb0;
+            @BindView(R.id.room_pic_thumb1) ImageView tb1;
+            @BindView(R.id.room_pic_thumb2) ImageView tb2;
+            @BindView(R.id.room_pic_thumb3) ImageView tb3;
+
             /* Beds are limited to 5 as of now */
             @BindView(R.id.property_room_beds) FlexboxLayout bed_con;
-            @BindView(R.id.property_rooms_book) Button buttonBook;
+            //@BindView(R.id.property_rooms_book) Button buttonBook;
             ImageView bed1, bed2, bed3, bed4, bed5, bed6;
 
             RoomHolder(View v) {

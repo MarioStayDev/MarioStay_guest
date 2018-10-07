@@ -1,7 +1,9 @@
 package com.mariostay.guest.mariostay;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -14,11 +16,13 @@ import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,7 +54,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
     private boolean first;
     private FirebaseFirestore db;
-    //private final String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
+    static final String KEY_ROOM = "com.mariostay.guest.mariostay.KEY_ROOM";
     private MenuItem favicon;
     private Property property;
     private AlertDialog alertRules;
@@ -169,6 +173,25 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         chip_wifi.setVisibility(imap.get(getString(R.string.chip_text_wifi)) ? View.VISIBLE : View.GONE);
         chip_sofa.setVisibility(imap.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
         chip_table.setVisibility(imap.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
+        /*
+              _
+             | |
+             | |===( )   //////
+             |_|   |||  | o o|
+                    ||| ( c  )                  ____
+                     ||| \= /                  ||   \_
+                      ||||||                   ||     |
+                      ||||||                ...||__/|-"
+                      ||||||             __|________|__
+                        |||             |______________|
+                        |||             || ||      || ||
+                        |||             || ||      || ||
+------------------------|||-------------||-||------||-||-------
+                        |__>            || ||      || ||
+
+
+     NullPointerException
+         */
 
         String temp = property.getInTime();
         inTime.setText(getString(R.string.in_time_flexible, temp == null || temp.length() == 0 || temp.equals("0") ? "Flexible" : temp));
@@ -314,7 +337,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
                     break;
                 case NOT_LOADING:
-                    Room t = Rooms.get(position);
+                    final Room t = Rooms.get(position);
 
                     RoomHolder holder = (RoomHolder) tholder;
                     holder.roomNo.setText(getString(R.string.property_room_room_no, t.getRoomNo()));
@@ -322,24 +345,72 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
                     Map<String, Boolean> m = t.getAmenities();
                     holder.chip_room_ac.setVisibility(m.get(getString(R.string.chip_text_ac)) ? View.VISIBLE : View.GONE);
-                    holder.chip_room_tv.setVisibility(m.get(getString(R.string.chip_text_tv)) ? View.VISIBLE : View.GONE);
+                    holder.chip_room_tv.setVisibility(m.get(getString(R.string.chip_text_room_tv)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_balcony.setVisibility(m.get(getString(R.string.chip_text_balcony)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_wardrobe.setVisibility(m.get(getString(R.string.chip_text_wardrobe)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_washroom.setVisibility(m.get(getString(R.string.chip_text_attached_washroom)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_gyser.setVisibility(m.get(getString(R.string.chip_text_gyser)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_sofa.setVisibility(m.get(getString(R.string.chip_text_sofa)) ? View.VISIBLE : View.GONE);
                     holder.chip_room_table.setVisibility(m.get(getString(R.string.chip_text_table)) ? View.VISIBLE : View.GONE);
+                    /*                                                                .
+                                                .--.       .--.                      /|\
+                                            _  `    \     /    `  _                   |
+                                             `\.===. \.^./ .===./`                    |
+                                                    \/`"`\/                           |
+                                                 ,  | --- |  ,                        |
+                                                / `\|;-.-'|/` \                       |
+                                               /    |::\  |    \      ----a tiny bug--
+                                            .-' ,-'`|:::; |`'-, '-.
+                                                |   |::::\|   |
+                                                |   |::::;|   |
+                                                |   \:::://   |
+                                                |    `.://'   |
+                                               .'             `.
+                                            _,'                 `,_
+                     */
 
                     //Put beds here
                     holder.bed_con.removeAllViews();
                     List<Integer> mbeds = t.getBedStats();
-                    for(int i : mbeds) {
+                    /*for(int i : mbeds) {
                         ImageView iv = new ImageView(PropertyDetailsActivity.this);
                         iv.setLayoutParams(new LinearLayout.LayoutParams(250, 250));
-                        iv.setImageResource(i == 0 ? R.drawable.bed/*av*/ : R.drawable.bed_un/*unav*/);
+                        if(i == 0) {
+                            iv.setImageResource(R.drawable.bed);
+                            if(!holder.buttonBook.isEnabled()) holder.buttonBook.setEnabled(true);
+                        } else iv.setImageResource(R.drawable.bed_un);
+                        //iv.setImageResource(i == 0 ? R.drawable.bed/*av** : R.drawable.bed_un/*unav**);
+                        holder.bed_con.addView(iv);
+                    }*/
+                    for(int i : mbeds) {
+                        TextView iv = new TextView(PropertyDetailsActivity.this);
+                        iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        iv.setGravity(Gravity.CENTER);
+                        if(i == 0) {
+                            iv.setText(String.valueOf(t.getRent()));
+                            Drawable d = getResources().getDrawable(R.drawable.bed);
+                            d.setBounds(10, 10, 10, 10);
+                            iv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
+                            if(!holder.buttonBook.isEnabled()) holder.buttonBook.setEnabled(true);
+                        } else {
+                            iv.setText("booked");
+                            Drawable d = getResources().getDrawable(R.drawable.bed_un);
+                            d.setBounds(10, 10, 10, 10);
+                            iv.setCompoundDrawablesWithIntrinsicBounds(null, d, null, null);
+                        }
+                        //iv.setImageResource(i == 0 ? R.drawable.bed/*av*/ : R.drawable.bed_un/*unav*/);
                         holder.bed_con.addView(iv);
                     }
 
+                    holder.buttonBook.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(PropertyDetailsActivity.this, BookingActivity.class);
+                            i.putExtra(MainActivity.KEY_PROPERTY, property);
+                            i.putExtra(KEY_ROOM, t);
+                            startActivity(i);
+                        }
+                    });
                     break;
             }
 
@@ -366,6 +437,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
             /* Beds are limited to 5 as of now */
             @BindView(R.id.property_room_beds) FlexboxLayout bed_con;
+            @BindView(R.id.property_rooms_book) Button buttonBook;
             ImageView bed1, bed2, bed3, bed4, bed5, bed6;
 
             RoomHolder(View v) {

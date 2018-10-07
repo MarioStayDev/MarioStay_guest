@@ -108,6 +108,18 @@
         app:flexWrap="wrap"
         app:justifyContent="center"/>
 
+    <!-- <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/ui_elems_spacing" /> -->
+
+    <Button
+        android:id="@+id/property_rooms_book"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_padding"
+        android:enabled="false"
+        android:text="Book"/>
+
 </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -74,6 +74,7 @@
     <string name="chip_text_wardrobe">Wardrobe</string>
     <string name="chip_text_balcony">Balcony</string>
     <string name="chip_text_ac">AC</string>
+    <string name="chip_text_room_tv">TV</string>
 
     <string name="in_time_flexible">In time : %1$s</string>
     <string name="out_time_flexible">Out Time : %1$s</string>
@@ -87,4 +88,9 @@
     <string name="OK_BUTTON">OK</string>
     <string name="property_details_rules_absent">&lt;No rules mentioned by host&gt;</string>
     <string name="message_property_empty">No properties to display!</string>
+
+    <string name="booking_screen_floor_display">Room %1$d, Floor %2$d</string>
+    <string name="booking_screen_date_dispaly">Your booking date is %1$s</string>
+    <string name="menu_main_logout">Logout</string>
+    <string name="menu_main_search">Search</string>
 </resources>

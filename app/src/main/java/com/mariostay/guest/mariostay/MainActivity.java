@@ -1,7 +1,7 @@
 package com.mariostay.guest.mariostay;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+//import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -18,11 +18,13 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements BrowseFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements BrowseFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
 
 	//static final String KEY_SHARED_PREFERENCE = "com.mariostay.guest.mariostay.KEY_SHARED_PREF", KEY_USER_NAME = "com.mariostay.guest.mariostay.KEY_USER_NAME", KEY_EMAIL = "com.mariostay.guest.mariostay.KEY_EMAIL";
 	//private final String KEY_LOGGED_IN = "com.mariostay.guest.mariostay.KEY_LOGGED_IN";
-	final static String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY";
+	final static String KEY_PROPERTY = "com.mariostay.guest.mariostay.KEY_PRPERTY",
+        KEY_SEARCH_LOCATION = "com.mariostay.guest.mariostay.KEY_SEARCH_LOCATION",
+        KEY_SEARCH_DATE = "com.mariostay.guest.mariostay.KEY_SEARCH_DATE";
 	private final int REQUEST_LOGIN = 101;
 	//private boolean userIsLoggedIn;
 	private FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -127,16 +129,17 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 	}
 
     @Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
+	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main,menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
+			case R.id.menu_search_property:
+				startActivity(new Intent(this, BookingSearch.class));
+				break;
 			case R.id.menu_logout:
 				/*prefMan.edit().putBoolean(KEY_LOGGED_IN,false).remove(KEY_USER_NAME).remove(KEY_EMAIL).apply();
 				userIsLoggedIn = false;*/
@@ -156,15 +159,24 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_LOGIN);
 	}
 
-	private void d(String s) {
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent == null) return;
+        String loc = intent.getStringExtra(KEY_SEARCH_LOCATION),
+                dat = intent.getStringExtra(KEY_SEARCH_DATE);
+        if(loc == null || dat == null) return;
+        ;
+    }
+
+    private void d(String s) {
     	mToast.cancel();
     	mToast = Toast.makeText(this, s, Toast.LENGTH_LONG);
     	mToast.show();
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch(requestCode) {
 			case REQUEST_LOGIN:
@@ -187,5 +199,10 @@ public class MainActivity extends AppCompatActivity implements BrowseFragment.On
 		Intent intent = new Intent(this, PropertyDetailsActivity.class);
 		intent.putExtra(KEY_PROPERTY, bundle.getParcelable(KEY_PROPERTY));
 		startActivity(intent);
+	}
+
+	@Override
+	public void onFragmentInteraction(Uri uri) {
+
 	}
 }

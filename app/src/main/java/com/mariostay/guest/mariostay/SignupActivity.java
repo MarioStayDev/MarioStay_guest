@@ -185,7 +185,7 @@ public class SignupActivity extends AppCompatActivity
 				public void onComplete(@NonNull Task<AuthResult> task) {
 					if(task.isSuccessful()) {
 						Log.d("TAG", "createUserWithEmailAndPassword:success");
-						storeUserDetails(task.getResult().getUser().getUid(), u.toString(), male, stud, ph.toString());
+						storeUserDetails(mAuth.getCurrentUser().getUid()/*task.getResult().getUser().getUid()*/, u.toString(), male, stud, ph.toString());
 								/*setResult(RESULT_OK);
 								finish();*/
 					}
@@ -221,6 +221,7 @@ public class SignupActivity extends AppCompatActivity
 				if(task.isSuccessful()) {
 					Log.d("TAG", "storeUser:success");
 					setResult(RESULT_OK);
+
 					finish();
 				} else {
 					Log.d("TAG", "storeUser:failure", task.getException());

@@ -51,6 +51,7 @@ import javax.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PropertyDetailsActivity extends AppCompatActivity {
 
@@ -61,6 +62,11 @@ public class PropertyDetailsActivity extends AppCompatActivity {
     private MenuItem favicon;
     private Property property;
     private AlertDialog alertRules;
+
+    final int REQUEST_BOOKING = 105;
+    private View tempView;
+    private Resources res;
+    private final int imgRight = 200, imgBottom = 200;
     //private List<Room> Rooms;
     //@BindViews({R.id.chip1, R.id.chip2, R.id.chip3, R.id.chip4, R.id.chip5, R.id.chip6, R.id.chip7, R.id.chip8, R.id.chip9, R.id.chip10, R.id.chip11, R.id.chip12, R.id.chip13, R.id.chip14, R.id.chip15})
     //List<ImageView> chips;
@@ -209,6 +215,8 @@ public class PropertyDetailsActivity extends AppCompatActivity {
         GlideApp.with(this).load(ref).placeholder(R.drawable.ic_launcher_background).into(propPic);
 
 
+        res = getResources();
+
         roomAdapter = new RoomAdapter();
         frame.setLayoutManager(new LinearLayoutManager(this) {
             @Override
@@ -330,19 +338,66 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                 case NOT_LOADING:
                     final Room t = Rooms.get(position);
 
-                    RoomHolder holder = (RoomHolder) tholder;
+                    final RoomHolder holder = (RoomHolder) tholder;
                     holder.roomNo.setText(getString(R.string.property_room_room_no, t.getRoomNo()));
 
-                    StorageReference ref0 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/0.jpg");
-                    StorageReference ref1 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/1.jpg");
-                    StorageReference ref2 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/2.jpg");
-                    StorageReference ref3 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/3.jpg");
+                    final StorageReference ref0 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/0.jpg");
+                    final StorageReference ref1 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/1.jpg");
+                    final StorageReference ref2 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/2.jpg");
+                    final StorageReference ref3 = storage.getReference("/users/PropertyPic/" + property.getPID() + "/" + t.getRoomId() + "/3.jpg");
 
                     GlideApp.with(PropertyDetailsActivity.this).load(ref0).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
                     GlideApp.with(PropertyDetailsActivity.this).load(ref0).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb0);
                     GlideApp.with(PropertyDetailsActivity.this).load(ref1).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb1);
                     GlideApp.with(PropertyDetailsActivity.this).load(ref2).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb2);
                     GlideApp.with(PropertyDetailsActivity.this).load(ref3).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.tb3);
+
+                    View.OnClickListener selectPic = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            int id = view.getId();
+
+
+                            Drawable u = res.getDrawable(R.drawable.border_unselected);
+                            Drawable s = res.getDrawable(R.drawable.border_selected);
+                            int pc = res.getColor(R.color.colorPrimary);
+                            int ac = res.getColor(R.color.colorAccent);
+
+                            /*holder.tb0.setBackground(u);
+                            holder.tb1.setBackground(u);
+                            holder.tb2.setBackground(u);
+                            holder.tb3.setBackground(u);*/
+
+                            ((CircleImageView)holder.tb0).setBorderColor(pc);
+                            ((CircleImageView)holder.tb1).setBorderColor(pc);
+                            ((CircleImageView)holder.tb2).setBorderColor(pc);
+                            ((CircleImageView)holder.tb3).setBorderColor(pc);
+
+                            switch(id) {
+                                case R.id.room_pic_thumb0:
+                                    try {GlideApp.with(PropertyDetailsActivity.this).load(ref0).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);}
+                                    catch (Exception e) { Log.d("TAG", "IMAGE NOT PRESENT"); }
+                                    break;
+                                case R.id.room_pic_thumb1:
+                                    GlideApp.with(PropertyDetailsActivity.this).load(ref1).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+                                    break;
+                                case R.id.room_pic_thumb2:
+                                    GlideApp.with(PropertyDetailsActivity.this).load(ref2).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+                                    break;
+                                case R.id.room_pic_thumb3:
+                                    GlideApp.with(PropertyDetailsActivity.this).load(ref3).   centerCrop()   .placeholder(R.drawable.ic_placeholder_384dp).into(holder.roomPhoto);
+                                    break;
+
+                            }
+                            ((CircleImageView)view).setBorderColor(ac);
+                            //view.setBackground(s);
+                        }
+                    };
+                    holder.tb0.setOnClickListener(selectPic);
+                    holder.tb1.setOnClickListener(selectPic);
+                    holder.tb2.setOnClickListener(selectPic);
+                    holder.tb3.setOnClickListener(selectPic);
+
 
                     Map<String, Boolean> m = t.getAmenities();
                     holder.chip_room_ac.setVisibility(m.get(getString(R.string.chip_text_ac)) ? View.VISIBLE : View.GONE);
@@ -356,7 +411,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
 
                     //Put beds here
                     holder.bed_con.removeAllViews();
-                    List<Integer> mbeds = t.getBedStats();
+                    /*List<Integer> mbeds = t.getBedStats();
                     /*for(int i : mbeds) {
                         ImageView iv = new ImageView(PropertyDetailsActivity.this);
                         iv.setLayoutParams(new LinearLayout.LayoutParams(250, 250));
@@ -366,7 +421,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                         } else iv.setImageResource(R.drawable.bed_un);
                         //iv.setImageResource(i == 0 ? R.drawable.bed/*av** : R.drawable.bed_un/*unav**);
                         holder.bed_con.addView(iv);
-                    }*/
+                    }**
                     int imgRight = 200, imgBottom = 200;
                     for(int i : mbeds) {
                         TextView iv = new TextView(PropertyDetailsActivity.this);
@@ -399,7 +454,7 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                             iv.setCompoundDrawables(null, d, null, null);
                         }
                         holder.bed_con.addView(iv);
-                    }
+                    }*/
 
                     /*holder.buttonBook.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -410,6 +465,46 @@ public class PropertyDetailsActivity extends AppCompatActivity {
                             startActivity(i);
                         }
                     });*/
+
+                    //int imgRight = 200, imgBottom = 200;
+                    int b = t.getBeds();
+                    List<String> bs = t.getBedStatsNew();
+                    if(bs != null) {
+                        for(String s : bs) {
+                            TextView iv = new TextView(PropertyDetailsActivity.this);
+                            iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            iv.setGravity(Gravity.CENTER);
+                            iv.setText("not available");
+                            Drawable d = res.getDrawable(R.drawable.bed_un);
+                            d.setBounds(0, 0, imgRight, imgBottom);
+                            iv.setCompoundDrawables(null, d, null, null);
+                            holder.bed_con.addView(iv);
+                            b--;
+                        }
+                    }
+                    for(int i = 0; i < b; i++) {
+                        TextView iv = new TextView(PropertyDetailsActivity.this);
+                        iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        iv.setGravity(Gravity.CENTER);
+                        iv.setText(String.valueOf(t.getRent()));
+                        Drawable d = res.getDrawable(R.drawable.bed);
+                        d.setBounds(0, 0, imgRight, imgBottom);
+                        iv.setCompoundDrawables(null, d, null, null);
+                        iv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                Intent i = new Intent(PropertyDetailsActivity.this, BookingActivity.class);
+                                i.putExtra(MainActivity.KEY_PROPERTY, property);
+                                i.putExtra(KEY_ROOM, t);
+                                tempView = view;
+                                startActivityForResult(i, REQUEST_BOOKING);
+
+                            }
+                        });
+                        iv.setClickable(true);
+                        holder.bed_con.addView(iv);
+                    }
                     break;
             }
 
@@ -455,6 +550,24 @@ public class PropertyDetailsActivity extends AppCompatActivity {
             LoadingHolder(View v) {
                 super(v);
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case REQUEST_BOOKING:
+                if(resultCode == RESULT_OK) {
+                    //View ag = (TextView)tempView;
+                    ((TextView) tempView).setText("not available");
+                    Drawable d = res.getDrawable(R.drawable.bed_un);
+                    d.setBounds(0, 0, imgRight, imgBottom);
+                    ((TextView) tempView).setCompoundDrawables(null, d, null, null);
+                    tempView.setOnClickListener(null);
+                }
+                tempView = null;
+                break;
         }
     }
 }

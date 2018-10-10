@@ -1,5 +1,6 @@
 package com.mariostay.guest.mariostay;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,10 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,9 +33,11 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -47,9 +52,13 @@ public class BookingActivity extends AppCompatActivity {
     private Dialog dialog;
     private Toast mToast;
     private String uid;
+    private DatePickerDialog dateD;
     @BindView(R.id.booking_toolbar) Toolbar toolbar;
     @BindView(R.id.booking_date_dispaly) TextView b_date;
     @BindView(R.id.booking_screen_account_details) TextView accno;
+    @BindView(R.id.booking_screen_payment_rent) TextView rent;
+    @BindView(R.id.booking_screen_payment_security) TextView sd;
+    @BindView(R.id.booking_screen_payment_total) TextView td;
     @BindView(R.id.booking_screen_tnc) CheckBox tnc;
     @BindView(R.id.booking_screen_book) Button book;
 
@@ -67,12 +76,21 @@ public class BookingActivity extends AppCompatActivity {
         room = in.getParcelableExtra(PropertyDetailsActivity.KEY_ROOM);
         if(room == null) { finish();return; }
 
+        setResult(RESULT_CANCELED);
+
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
         toolbar.setTitle(property.getName());
         toolbar.setSubtitle(getString(R.string.booking_screen_floor_display, room.getRoomNo(), room.getFloor()));
         b_date.setText(getString(R.string.booking_screen_date_dispaly, SimpleDateFormat.getDateInstance().format(Calendar.getInstance().getTime())));
+        int roomRent = room.getRent(), sde = property.getSecurityMultiplier()*roomRent, tot = roomRent +sde;
+        rent.setText("Monthly rent: "+roomRent);
+        sd.setText("Security deposit: "+sde);
+        td.setText("Total: "+tot);
+
+        Calendar c = Calendar.getInstance();
+        dateD = new DatePickerDialog(this, null, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 
         tnc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -86,15 +104,24 @@ public class BookingActivity extends AppCompatActivity {
                 //searchAndNotifyHost();
                 if(dialog == null) return;
                 //String uid = fa.getCurrentUser().getUid();
-                if(uid == null) {
+                if(uid == null && (uid = fa.getCurrentUser().getUid()) == null) {
                     d("Unable to get Profile ID");
                     return;
                 }
                 dialog.show();
-                Map<String, String> rMap = new HashMap<>();
-                rMap.put("date", new Date().toString());
-                requestsCollection.document(uid).set(rMap);
-                //db.collection("properties").document(property.getPID()).collection("rooms").document(room.getRoomId()).update("status", 1);
+                /*Map<String, String> rMap = new HashMap<>();
+                rMap.put("GID", uid);
+                rMap.put("name", fa.getCurrentUser().getDisplayName());*/
+                /*List<String> rMap = room.getBedStatsNew();
+                if(rMap == null) rMap = new ArrayList<>();
+                StringBuilder sb = new StringBuilder();
+                sb.append("{GID:").append(uid).append(", name:").append(fa.getCurrentUser().getDisplayName()).append("}");
+                rMap.add(sb.toString());
+
+                //requestsCollection.document(uid).set(rMap);
+                db.collection("properties").document(property.getPID()).collection("rooms").document(room.getRoomId()).update("bedStatsNew", rMap);
+*/
+                bookRoom();
             }
         });
 
@@ -103,7 +130,7 @@ public class BookingActivity extends AppCompatActivity {
         //fm = FirebaseMessaging.getInstance();
         fa = FirebaseAuth.getInstance();
         FirebaseUser fu = fa.getCurrentUser();
-        if(fu != null) uid = fu.getUid();
+        if(fu != null) uid = fa.getUid();
 
         db.collection("USERS").document(property.getHID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -148,9 +175,31 @@ public class BookingActivity extends AppCompatActivity {
         requestsCollection = db.collection("propertyRequests").document(property.getPID()).collection("requests");
     }
 
+    private void bookRoom() {
+        ;
+        List<String> rMap = room.getBedStatsNew();
+        if(rMap == null) rMap = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        sb.append("{GID:").append(uid).append(", name:").append(fa.getCurrentUser().getDisplayName()).append("}");
+        rMap.add(sb.toString());
+
+        //requestsCollection.document(uid).set(rMap);
+        db.collection("properties").document(property.getPID()).collection("rooms").document(room.getRoomId()).update("bedStatsNew", rMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                setResult(RESULT_OK);
+            }
+        });
+
+    }
+
     private void d(String s) {
         mToast.cancel();
         mToast = Toast.makeText(this, s, Toast.LENGTH_LONG);
         mToast.show();
+    }
+
+    public void dispDate(View view) {
+        dateD.show();
     }
 }

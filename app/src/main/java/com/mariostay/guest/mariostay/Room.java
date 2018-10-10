@@ -14,10 +14,12 @@ public class Room implements Parcelable {
     private Map<String, Boolean> imap;
     //private Photos pics;
     private List<Integer> bedStats;
+    private List<String> bedStatsNew;
 
     Room() {
         imap = new HashMap<>();
         bedStats = new ArrayList<>();
+        bedStatsNew = new ArrayList<>();
     }
 
     private Room(Parcel p) {
@@ -30,6 +32,8 @@ public class Room implements Parcelable {
         p.readMap(this.imap, Map.class.getClassLoader());
         bedStats = new ArrayList<>();
         p.readList(this.getBedStats(), List.class.getClassLoader());
+        bedStatsNew = new ArrayList<>();
+        p.readList(this.getBedStatsNew(), Map.class.getClassLoader());
     }
 
     public String getRoomId() { return roomId; }
@@ -39,6 +43,7 @@ public class Room implements Parcelable {
     public int getRent() { return rent; }
     public Map<String, Boolean> getAmenities() { return imap; }
     public List<Integer> getBedStats() { return bedStats; }
+    public List<String> getBedStatsNew() { return bedStatsNew; }
 
     public void setRoomId(String id) { roomId = id; }
     public void setRoomNo(int r) { this.roomNo = r; }
@@ -47,6 +52,7 @@ public class Room implements Parcelable {
     public void setRent(int r) { this.rent = r; }
     public void setAmenities(Map<String, Boolean> m) { imap.putAll(m); }
     public void setBedStats(List<Integer> beds_stats) { this.bedStats = beds_stats; }
+    public void setBedStatsNew(List<String> bedStatsNew) { this.bedStatsNew = bedStatsNew; }
 
     @Override
     public int describeContents() {
@@ -62,6 +68,7 @@ public class Room implements Parcelable {
         dest.writeInt(this.rent);
         dest.writeMap(this.imap);
         dest.writeList(this.bedStats);
+        dest.writeList(this.bedStatsNew);
     }
 
     public static final Parcelable.Creator<Room> CREATOR = new Parcelable.Creator<Room>() {

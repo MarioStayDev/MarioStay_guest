@@ -40,27 +40,63 @@
 
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" >
 
-        <com.mariostay.guest.mariostay.SquareImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/room_pic_thumb0"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            app:civ_border_color="@color/colorAccent"
+            app:civ_border_width="1dp" />
+        <!--<com.mariostay.guest.mariostay.SquareImageView
+            android:id="@+id/room_pic_thumb0"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/border_selected" />-->
 
-        <com.mariostay.guest.mariostay.SquareImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/room_pic_thumb1"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="1dp" />
+        <!--<com.mariostay.guest.mariostay.SquareImageView
+            android:id="@+id/room_pic_thumb1"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/border_unselected" />-->
 
-        <com.mariostay.guest.mariostay.SquareImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/room_pic_thumb2"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="1dp" />
+        <!--<com.mariostay.guest.mariostay.SquareImageView
+            android:id="@+id/room_pic_thumb2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/border_unselected" />-->
 
-        <com.mariostay.guest.mariostay.SquareImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/room_pic_thumb3"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="1dp" />
+        <!--<com.mariostay.guest.mariostay.SquareImageView
+            android:id="@+id/room_pic_thumb3"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/border_unselected" />-->
 
     </com.google.android.flexbox.FlexboxLayout>
 

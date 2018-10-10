@@ -26,7 +26,9 @@
         android:gravity="center"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/booking_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/booking_toolbar"
+        android:clickable="true"
+        android:onClick="dispDate" />
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -52,6 +54,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Payment Details" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/booking_screen_payment_rent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="&lt;account_details&gt;" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/booking_screen_payment_security"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="&lt;account_details&gt;" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/booking_screen_payment_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="&lt;account_details&gt;" />
 
             <Space
                 android:layout_width="wrap_content"
